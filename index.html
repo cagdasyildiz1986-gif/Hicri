@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b2f24" />
+  <title>Hicri</title>
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <script>
+    // Geliştirme sürümü: gövdeyi src/body.html'den yükler
+    fetch("src/body.html")
+      .then((r) => r.text())
+      .then((html) => {
+        document.body.insertAdjacentHTML("afterbegin", html);
+        return import("./src/js/app.js");
+      });
+  </script>
+</body>
+</html>

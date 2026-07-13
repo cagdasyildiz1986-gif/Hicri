@@ -1,0 +1,286 @@
+/* Hicri — tezhip esintili tema: zümrüt zemin, altın vurgu, fildişi metin */
+
+:root {
+  --zemin: #0b2f24;          /* koyu zümrüt */
+  --zemin-koyu: #082419;
+  --kart: #10382b;
+  --kart-cizgi: #1d4a39;
+  --altin: #cda85c;
+  --altin-acik: #e3c98b;
+  --fildisi: #f3ebd8;
+  --adacayi: #9db8a9;
+  --kandil: #d98f6b;         /* kandil gecesi vurgusu — bakır */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 50% -10%, #14453444 0%, transparent 60%),
+    var(--zemin-koyu);
+  color: var(--fildisi);
+  font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--zemin);
+  border-left: 1px solid var(--kart-cizgi);
+  border-right: 1px solid var(--kart-cizgi);
+  padding: 1.5rem 1.25rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+/* ---- Üst bölüm: başlık + şehir ---- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand {
+  font-size: 1.05rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--altin);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.city-wrap select {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 2px;
+  color: var(--adacayi);
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.35rem 1.6rem 0.35rem 0.7rem;
+  cursor: pointer;
+}
+.city-wrap {
+  position: relative;
+}
+.city-wrap::after {
+  content: "";
+  position: absolute;
+  right: 0.6rem; top: 50%;
+  width: 6px; height: 6px;
+  border-right: 1px solid var(--altin);
+  border-bottom: 1px solid var(--altin);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+.city-wrap select:focus-visible {
+  outline: 2px solid var(--altin);
+  outline-offset: 2px;
+}
+
+/* ---- Tarih başlığı ---- */
+.date-block {
+  text-align: center;
+  padding: 0.6rem 0 0;
+}
+
+.hijri {
+  font-size: 1.9rem;
+  line-height: 1.2;
+  color: var(--altin-acik);
+  margin: 0.4rem 0 0.3rem;
+  text-wrap: balance;
+  font-weight: 400;
+}
+
+.gregorian {
+  color: var(--adacayi);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+/* Tezhip ayraç: çizgi — yıldız — çizgi */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--altin);
+}
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to var(--yon, right), transparent, var(--altin) 80%);
+  opacity: 0.55;
+}
+.divider::after { --yon: left; }
+.divider .star { flex: none; }
+
+/* ---- Geri sayım kartı ---- */
+.countdown-card {
+  position: relative;
+  text-align: center;
+  padding: 1.6rem 1rem 1.5rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+}
+/* köşe süsleri */
+.countdown-card::before, .countdown-card::after {
+  content: "";
+  position: absolute;
+  width: 14px; height: 14px;
+  border-color: var(--altin);
+  border-style: solid;
+  opacity: 0.8;
+}
+.countdown-card::before {
+  top: 6px; left: 6px;
+  border-width: 1px 0 0 1px;
+}
+.countdown-card::after {
+  bottom: 6px; right: 6px;
+  border-width: 0 1px 1px 0;
+}
+
+.next-name {
+  color: var(--adacayi);
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.countdown {
+  font-size: 3.2rem;
+  line-height: 1.15;
+  color: var(--fildisi);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  margin: 0.3rem 0 0.2rem;
+}
+
+.next-time {
+  color: var(--altin);
+  font-size: 1rem;
+}
+
+/* ---- Vakitler ---- */
+.section-title {
+  font-size: 0.8rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--altin);
+  text-align: center;
+  margin: 0;
+}
+
+.times {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--kart-cizgi);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.time-cell {
+  background: var(--zemin);
+  padding: 0.8rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.time-cell.active {
+  background: var(--kart);
+  box-shadow: inset 0 -2px 0 var(--altin);
+}
+.time-name {
+  font-size: 0.78rem;
+  color: var(--adacayi);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.time-cell.active .time-name { color: var(--altin-acik); }
+.time-value {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--fildisi);
+}
+
+/* ---- Dini günler ---- */
+.days-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.day-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.75rem 0.9rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-left: 3px solid var(--adacayi);
+  border-radius: 3px;
+}
+.day-row.kandil { border-left-color: var(--kandil); }
+.day-row.bayram { border-left-color: var(--altin); }
+
+.day-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.day-name { font-size: 1.02rem; color: var(--fildisi); }
+.day-date { font-size: 0.82rem; color: var(--adacayi); }
+
+.day-when {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: none;
+}
+.day-count {
+  font-size: 1rem;
+  color: var(--altin-acik);
+  font-variant-numeric: tabular-nums;
+}
+.day-count.today { color: var(--kandil); }
+.day-type {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--adacayi);
+}
+
+.footnote {
+  color: var(--adacayi);
+  font-size: 0.72rem;
+  text-align: center;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .day-row { transition: border-color 0.2s; }
+}
