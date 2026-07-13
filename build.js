@@ -10,7 +10,10 @@ const root = dirname(fileURLToPath(import.meta.url));
 const outDir = process.argv[2] || join(root, "dist");
 
 // Bağımlılık sırasına göre; import/export satırları ayıklanarak birleştirilir
-const MODULES = ["hijri.js", "prayer.js", "cities.js", "religiousDays.js", "app.js"];
+const MODULES = [
+  "hijri.js", "prayer.js", "cities.js", "religiousDays.js",
+  "daily.js", "zikir.js", "esma.js", "app.js",
+];
 
 const js = MODULES.map((f) => {
   const src = readFileSync(join(root, "src/js", f), "utf8");

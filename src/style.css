@@ -36,7 +36,7 @@ body {
   background: var(--zemin);
   border-left: 1px solid var(--kart-cizgi);
   border-right: 1px solid var(--kart-cizgi);
-  padding: 1.5rem 1.25rem 3rem;
+  padding: 1.5rem 1.25rem 6rem; /* altta sekme çubuğu payı */
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
@@ -271,6 +271,266 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--adacayi);
+}
+
+/* ---- Sayfalar ve sekme çubuğu ---- */
+.pages { display: flex; flex-direction: column; }
+.page { display: none; flex-direction: column; gap: 1.4rem; }
+.page.active { display: flex; }
+.bosluk { height: 0.7rem; }
+
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  display: flex;
+  background: var(--zemin-koyu);
+  border-top: 1px solid var(--kart-cizgi);
+  padding: 0.35rem 0 calc(0.45rem + env(safe-area-inset-bottom));
+  z-index: 10;
+}
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--adacayi);
+  font: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.3rem 0;
+  cursor: pointer;
+}
+.tab svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.tab.active { color: var(--altin-acik); }
+.tab.active svg { fill: currentColor; stroke: none; }
+.tab:focus-visible { outline: 2px solid var(--altin); outline-offset: -2px; }
+
+/* ---- Günün ayeti / hadisi ---- */
+.daily-card {
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  padding: 1.1rem 1.2rem;
+  text-align: center;
+}
+.daily-tur {
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--altin);
+}
+.daily-metin {
+  margin: 0.6rem 0 0.5rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--fildisi);
+  text-wrap: balance;
+}
+.daily-kaynak {
+  font-size: 0.8rem;
+  color: var(--adacayi);
+  font-style: italic;
+}
+
+/* ---- Zikirmatik ---- */
+.zikir-head {
+  text-align: center;
+  min-height: 4.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  justify-content: center;
+}
+.zikir-arapca {
+  font-size: 1.7rem;
+  color: var(--altin-acik);
+  direction: rtl;
+  line-height: 1.4;
+}
+.zikir-ad { color: var(--adacayi); font-size: 0.95rem; }
+
+.zikir-pad {
+  position: relative;
+  width: min(64vw, 250px);
+  height: min(64vw, 250px);
+  margin: 0.8rem auto;
+  border-radius: 50%;
+  border: none;
+  background: var(--kart);
+  color: var(--fildisi);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+.zikir-pad:active { background: #164434; }
+.zikir-pad:focus-visible { outline: 2px solid var(--altin); outline-offset: 4px; }
+.zikir-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.ring-bg { fill: none; stroke: var(--kart-cizgi); stroke-width: 2.5; }
+.ring-fg {
+  fill: none;
+  stroke: var(--altin);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.15s ease;
+}
+.zikir-sayi {
+  font-size: 3.4rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.zikir-hedef {
+  color: var(--adacayi);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.zikir-alt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.2rem;
+}
+.zikir-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+.zikir-stat span {
+  font-size: 1.3rem;
+  color: var(--altin-acik);
+  font-variant-numeric: tabular-nums;
+}
+.zikir-stat label {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--adacayi);
+}
+.zikir-sifirla {
+  background: none;
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 2px;
+  color: var(--adacayi);
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+}
+.zikir-sifirla:hover { color: var(--fildisi); border-color: var(--adacayi); }
+.zikir-sifirla:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 1.1rem;
+}
+.chip {
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 999px;
+  color: var(--adacayi);
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+}
+.chip.on {
+  color: var(--zemin-koyu);
+  background: var(--altin);
+  border-color: var(--altin);
+}
+.chip:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+
+/* ---- Esmaü'l-Hüsna ---- */
+.esma-arama input {
+  width: 100%;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 2px;
+  color: var(--fildisi);
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.9rem;
+}
+.esma-arama input::placeholder { color: var(--adacayi); opacity: 0.8; }
+.esma-arama input:focus-visible { outline: 2px solid var(--altin); outline-offset: 1px; }
+
+.esma-list {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.esma-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  padding: 0.7rem 0.9rem;
+}
+.esma-no {
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  color: var(--altin);
+  font-variant-numeric: tabular-nums;
+}
+.esma-orta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.esma-ad { color: var(--fildisi); font-size: 1rem; }
+.esma-anlam { color: var(--adacayi); font-size: 0.82rem; line-height: 1.45; }
+.esma-arapca {
+  flex: none;
+  font-size: 1.35rem;
+  color: var(--altin-acik);
+  direction: rtl;
+}
+.esma-bos {
+  text-align: center;
+  color: var(--adacayi);
+  padding: 1.5rem 0;
 }
 
 .footnote {

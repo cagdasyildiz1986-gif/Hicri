@@ -4,6 +4,9 @@ import { toHijri, formatHijri } from "./hijri.js";
 import { prayerTimes, nextPrayer, PRAYER_NAMES } from "./prayer.js";
 import { CITIES } from "./cities.js";
 import { upcomingDays, daysUntil } from "./religiousDays.js";
+import { gununIcerigi } from "./daily.js";
+import { initZikir } from "./zikir.js";
+import { initEsma } from "./esma.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -54,6 +57,12 @@ function renderStatic() {
     </div>`;
   }).join("");
 
+  // Günün ayeti / hadisi
+  const icerik = gununIcerigi(now);
+  $("#daily-tur").textContent = icerik.tur;
+  $("#daily-metin").textContent = "“" + icerik.metin + "”";
+  $("#daily-kaynak").textContent = icerik.kaynak;
+
   // Yaklaşan dini günler
   const days = upcomingDays(now, 8);
   $("#days-list").innerHTML = days.map((d) => {
@@ -93,8 +102,26 @@ function render() {
   renderCountdown();
 }
 
+function initTabs() {
+  const tabs = document.querySelectorAll(".tab");
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.classList.toggle("active", t === tab));
+      document.querySelectorAll(".page").forEach((p) => {
+        p.classList.toggle("active", p.id === "page-" + tab.dataset.page);
+      });
+      // Şehir seçimi yalnızca ana sayfada anlamlı
+      $(".city-wrap").style.visibility =
+        tab.dataset.page === "home" ? "visible" : "hidden";
+    });
+  });
+}
+
 export function start() {
   $("#city-select").addEventListener("change", (e) => setCity(e.target.value));
+  initTabs();
+  initZikir($("#zikir-root"));
+  initEsma($("#esma-root"));
   render();
   setInterval(() => {
     renderCountdown();

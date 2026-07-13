@@ -15,39 +15,85 @@
     </div>
   </header>
 
-  <section class="date-block">
-    <div class="gregorian" id="gregorian-date"></div>
-    <h1 class="hijri" id="hijri-date"></h1>
-    <div class="divider" aria-hidden="true">
-      <svg class="star" width="14" height="14" viewBox="0 0 24 24">
-        <g fill="none" stroke="#cda85c" stroke-width="1.4">
-          <rect x="6" y="6" width="12" height="12" />
-          <rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)" />
-        </g>
+  <main class="pages">
+    <!-- ANA SAYFA -->
+    <section class="page active" id="page-home">
+      <section class="date-block">
+        <div class="gregorian" id="gregorian-date"></div>
+        <h1 class="hijri" id="hijri-date"></h1>
+        <div class="divider" aria-hidden="true">
+          <svg class="star" width="14" height="14" viewBox="0 0 24 24">
+            <g fill="none" stroke="#cda85c" stroke-width="1.4">
+              <rect x="6" y="6" width="12" height="12" />
+              <rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)" />
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section class="countdown-card">
+        <div class="next-name" id="next-name"></div>
+        <div class="countdown" id="countdown">--:--:--</div>
+        <div class="next-time" id="next-time"></div>
+      </section>
+
+      <section>
+        <h2 class="section-title">Bugünün Vakitleri</h2>
+        <div class="bosluk"></div>
+        <div class="times" id="times"></div>
+      </section>
+
+      <section class="daily-card" id="daily-card">
+        <div class="daily-tur" id="daily-tur"></div>
+        <p class="daily-metin" id="daily-metin"></p>
+        <div class="daily-kaynak" id="daily-kaynak"></div>
+      </section>
+
+      <section>
+        <h2 class="section-title">Dini Günler</h2>
+        <div class="bosluk"></div>
+        <ul class="days-list" id="days-list"></ul>
+      </section>
+
+      <p class="footnote">
+        Vakitler cihaz üzerinde astronomik hesapla üretilir; Diyanet takvimiyle
+        birkaç dakikalık fark olabilir. Hicri tarihlerde 1 günlük fark görülebilir.
+      </p>
+    </section>
+
+    <!-- ZİKİRMATİK -->
+    <section class="page" id="page-zikir">
+      <h2 class="section-title">Zikirmatik</h2>
+      <div class="bosluk"></div>
+      <div id="zikir-root"></div>
+    </section>
+
+    <!-- ESMAÜ'L-HÜSNA -->
+    <section class="page" id="page-esma">
+      <h2 class="section-title">Esmaü'l-Hüsna</h2>
+      <div class="bosluk"></div>
+      <div id="esma-root"></div>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="Ana gezinme">
+    <button class="tab active" data-page="home" aria-label="Ana Sayfa">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z" /></svg>
+      <span>Ana Sayfa</span>
+    </button>
+    <button class="tab" data-page="zikir" aria-label="Zikirmatik">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="5" r="1.7" /><circle cx="6.5" cy="8" r="1.7" /><circle cx="17.5" cy="8" r="1.7" />
+        <circle cx="5" cy="13.5" r="1.7" /><circle cx="19" cy="13.5" r="1.7" />
+        <circle cx="8" cy="18" r="1.7" /><circle cx="16" cy="18" r="1.7" /><circle cx="12" cy="20" r="1.7" />
       </svg>
-    </div>
-  </section>
-
-  <section class="countdown-card">
-    <div class="next-name" id="next-name"></div>
-    <div class="countdown" id="countdown">--:--:--</div>
-    <div class="next-time" id="next-time"></div>
-  </section>
-
-  <section>
-    <h2 class="section-title">Bugünün Vakitleri</h2>
-    <div style="height: 0.7rem"></div>
-    <div class="times" id="times"></div>
-  </section>
-
-  <section>
-    <h2 class="section-title">Dini Günler</h2>
-    <div style="height: 0.7rem"></div>
-    <ul class="days-list" id="days-list"></ul>
-  </section>
-
-  <p class="footnote">
-    Vakitler cihaz üzerinde astronomik hesapla üretilir; Diyanet takvimiyle
-    birkaç dakikalık fark olabilir. Hicri tarihlerde 1 günlük fark görülebilir.
-  </p>
+      <span>Zikir</span>
+    </button>
+    <button class="tab" data-page="esma" aria-label="Esmaü'l-Hüsna">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3 L14.2 9.8 L21 12 L14.2 14.2 L12 21 L9.8 14.2 L3 12 L9.8 9.8 Z" />
+      </svg>
+      <span>Esma</span>
+    </button>
+  </nav>
 </div>
