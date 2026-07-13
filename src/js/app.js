@@ -6,7 +6,7 @@ import { CITIES } from "./cities.js";
 import { upcomingDays, daysUntil } from "./religiousDays.js";
 import { gununIcerigi } from "./daily.js";
 import { initZikir } from "./zikir.js";
-import { initEsma } from "./esma.js";
+import { initOgren } from "./ogren.js";
 import { initCalendar } from "./calendar.js";
 import { initQibla } from "./qibla.js";
 
@@ -130,7 +130,7 @@ export function start() {
   $("#city-select").addEventListener("change", (e) => setCity(e.target.value));
   initTabs();
   initZikir($("#zikir-root"));
-  initEsma($("#esma-root"));
+  initOgren($("#ogren-root"));
   takvimApi = initCalendar($("#takvim-root"), getCity);
   kibleApi = initQibla($("#kible-root"), getCity);
   render();
