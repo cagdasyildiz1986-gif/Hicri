@@ -7,6 +7,8 @@ import { upcomingDays, daysUntil } from "./religiousDays.js";
 import { gununIcerigi } from "./daily.js";
 import { initZikir } from "./zikir.js";
 import { initEsma } from "./esma.js";
+import { initCalendar } from "./calendar.js";
+import { initQibla } from "./qibla.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -25,10 +27,18 @@ function getCity() {
   return CITIES.find((c) => c.name === saved) || CITIES.find((c) => c.name === "İstanbul");
 }
 
+let takvimApi = null;
+let kibleApi = null;
+
 function setCity(name) {
   localStorage.setItem("hicri.city", name);
   render();
+  takvimApi?.refresh();
+  kibleApi?.refresh();
 }
+
+// Şehir seçimi bu sekmelerde anlamlı
+const SEHIRLI_SAYFALAR = ["home", "takvim", "kible"];
 
 const TYPE_LABELS = { kandil: "Kandil", bayram: "Bayram", gun: "Mübarek Gün" };
 
@@ -110,9 +120,8 @@ function initTabs() {
       document.querySelectorAll(".page").forEach((p) => {
         p.classList.toggle("active", p.id === "page-" + tab.dataset.page);
       });
-      // Şehir seçimi yalnızca ana sayfada anlamlı
       $(".city-wrap").style.visibility =
-        tab.dataset.page === "home" ? "visible" : "hidden";
+        SEHIRLI_SAYFALAR.includes(tab.dataset.page) ? "visible" : "hidden";
     });
   });
 }
@@ -122,6 +131,8 @@ export function start() {
   initTabs();
   initZikir($("#zikir-root"));
   initEsma($("#esma-root"));
+  takvimApi = initCalendar($("#takvim-root"), getCity);
+  kibleApi = initQibla($("#kible-root"), getCity);
   render();
   setInterval(() => {
     renderCountdown();

@@ -533,6 +533,175 @@ body {
   padding: 1.5rem 0;
 }
 
+/* ---- Takvim ---- */
+.tk-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+.tk-btn {
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 2px;
+  color: var(--altin);
+  font-size: 1.3rem;
+  line-height: 1;
+  width: 2.4rem;
+  height: 2.4rem;
+  cursor: pointer;
+}
+.tk-btn.gizli { visibility: hidden; }
+.tk-btn:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+.tk-baslik { text-align: center; flex: 1; }
+.tk-ay { font-size: 1.15rem; color: var(--fildisi); }
+.tk-hicri-ay { font-size: 0.8rem; color: var(--altin); margin-top: 0.1rem; }
+
+.tk-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.tk-head {
+  margin-bottom: 3px;
+}
+.tk-head div {
+  text-align: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--adacayi);
+  padding: 0.3rem 0;
+}
+.tk-cell {
+  position: relative;
+  background: var(--kart);
+  border: 1px solid transparent;
+  border-radius: 2px;
+  min-height: 3.1rem;
+  padding: 0.25rem 0.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+}
+.tk-cell.bos { background: transparent; }
+.tk-cell.bugun { border-color: var(--altin); }
+.tk-miladi {
+  font-size: 0.95rem;
+  color: var(--fildisi);
+  font-variant-numeric: tabular-nums;
+}
+.tk-cell.bugun .tk-miladi { color: var(--altin-acik); }
+.tk-hicri {
+  font-size: 0.62rem;
+  color: var(--adacayi);
+  font-variant-numeric: tabular-nums;
+}
+.tk-nokta {
+  position: absolute;
+  bottom: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--adacayi);
+}
+.tk-cell.kandil .tk-nokta { background: var(--kandil); }
+.tk-cell.bayram .tk-nokta { background: var(--altin); }
+
+.tk-liste { margin-top: 1rem; }
+
+.tk-alt-butonlar {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.tk-bugun-btn {
+  background: none;
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 2px;
+  color: var(--adacayi);
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+.tk-bugun-btn:hover { color: var(--fildisi); border-color: var(--adacayi); }
+.tk-bugun-btn:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+
+/* ---- İmsakiye ---- */
+.im-tablo-kap {
+  overflow-x: auto;
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+}
+.im-tablo {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.im-tablo th {
+  text-align: left;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--altin);
+  font-weight: 400;
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid var(--kart-cizgi);
+}
+.im-tablo td {
+  padding: 0.5rem 0.7rem;
+  color: var(--fildisi);
+  border-bottom: 1px solid var(--kart-cizgi);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.im-tablo td:first-child { color: var(--adacayi); }
+.im-tablo tr:last-child td { border-bottom: none; }
+.im-tablo tr:nth-child(even) td { background: var(--kart); }
+.im-tablo tr.bugun td { background: #1a4a37; color: var(--altin-acik); }
+
+/* ---- Kıble ---- */
+.kb-kap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: center;
+}
+.kb-aci {
+  margin: 0;
+  color: var(--altin-acik);
+  font-size: 1.05rem;
+}
+.kb-pusula {
+  width: min(72vw, 280px);
+}
+.kb-pusula svg { width: 100%; height: auto; display: block; }
+.kb-cember { fill: none; stroke: var(--kart-cizgi); stroke-width: 2; }
+.kb-cember.ince { stroke-width: 0.8; }
+.kb-harfler text {
+  fill: var(--adacayi);
+  font-size: 13px;
+  text-anchor: middle;
+  font-family: inherit;
+}
+.kb-kabe-isaret { fill: var(--altin); }
+.kb-kabe-kutu { fill: none; stroke: var(--altin); stroke-width: 1.4; }
+.kb-ibre { fill: var(--fildisi); }
+.kb-merkez { fill: var(--altin); }
+.kb-pusula.uyumlu .kb-cember { stroke: var(--altin); }
+.kb-pusula.uyumlu .kb-ibre { fill: var(--altin-acik); }
+.kb-durum {
+  margin: 0;
+  color: var(--adacayi);
+  font-size: 0.9rem;
+  min-height: 1.3em;
+}
+
 .footnote {
   color: var(--adacayi);
   font-size: 0.72rem;

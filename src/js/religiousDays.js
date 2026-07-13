@@ -63,6 +63,25 @@ export function upcomingDays(now, count = 8) {
   return list.slice(0, count);
 }
 
+// Verilen tarih aralığındaki (dahil) dini günler — takvim görünümü için
+export function religiousDaysBetween(start, end) {
+  const out = [];
+  for (let t = start.getTime(); t <= end.getTime(); t += DAY_MS) {
+    const d = new Date(t);
+    const hToday = toHijri(d);
+    const hTomorrow = toHijri(new Date(t + DAY_MS));
+    for (const f of FIXED_DAYS) {
+      const h = f.eve ? hTomorrow : hToday; // kandil, gecenin akşamında gösterilir
+      if (h.month === f.month && h.day === f.day) out.push({ ...f, date: d });
+    }
+    // Regaib: Recep'in ilk perşembesi (gecesi cumaya bağlanır)
+    if (hToday.month === 7 && hToday.day <= 7 && d.getDay() === 4) {
+      out.push({ name: "Regaib Kandili", type: "kandil", eve: true, date: d });
+    }
+  }
+  return out;
+}
+
 export function daysUntil(now, date) {
   const a = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   return Math.round((date - a) / DAY_MS);
