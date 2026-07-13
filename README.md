@@ -5,13 +5,18 @@ namaz vakitleri, kıble, zikirmatik ve Kur'an — hepsi bir arada.
 
 ## Vizyon ve yol haritası
 
+Ayrıntılı plan için [PLAN.md](PLAN.md) dosyasına bakın.
+
 | Aşama | Kapsam | Durum |
 |-------|--------|-------|
-| 1 | Ana ekran: Hicri tarih, namaz vakitleri ve geri sayım, yaklaşan dini günler | ✅ İlk sürüm |
-| 1b | Ay görünümlü Hicri/Miladi takvim, kıble pusulası | Planlandı |
-| 2 | Zikirmatik, günlük ayet/hadis, Esmaü'l-Hüsna | Planlandı |
-| 3 | Kur'an okuma ve Türkçe meal | Planlandı |
-| 4 | Ezan bildirimleri, Capacitor ile Android/iOS paketleme | Planlandı |
+| 1 | Ana ekran: Hicri tarih, namaz vakitleri ve geri sayım, dini günler | ✅ İlk sürüm |
+| 2 | Sekmeli gezinme, zikirmatik, Esmaü'l-Hüsna, günlük ayet/hadis | Planlandı |
+| 3 | Ay görünümlü takvim, kıble pusulası, Ramazan imsakiyesi | Planlandı |
+| 4 | Yasin-i Şerif, dua/namaz duaları öğreniyorum, namaz rehberi | Planlandı |
+| 5 | Kur'an öğreniyorum: Arapça metin + çoklu meal | Planlandı |
+| 6 | Ezan sesi, bildirimler, Capacitor ile Android/iOS paketleme | Planlandı |
+| 7 | Hadis zinciri (hesap + sunucu gerektiren sosyal özellik) | Planlandı |
+| 8 | Mağaza yayını (Google Play + App Store) | Planlandı |
 
 ## Teknik yaklaşım
 
