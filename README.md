@@ -3,6 +3,10 @@
 Türkçe, çevrimdışı çalışan İslami yaşam uygulaması: Hicri takvim, dini günler,
 namaz vakitleri, kıble, zikirmatik ve Kur'an — hepsi bir arada.
 
+**Canlı önizleme:** <https://cagdasyildiz1986-gif.github.io/Hicri/> —
+her push sonrası GitHub Actions tarafından otomatik güncellenir
+(son push edilen dalın sürümünü gösterir).
+
 ## Vizyon ve yol haritası
 
 Ayrıntılı plan için [PLAN.md](PLAN.md) dosyasına bakın.
