@@ -10,8 +10,16 @@
       </svg>
       Hicri
     </div>
-    <div class="city-wrap">
-      <select id="city-select" aria-label="Şehir seçimi"></select>
+    <div class="topbar-sag">
+      <div class="city-wrap">
+        <select id="city-select" aria-label="Şehir seçimi"></select>
+      </div>
+      <button class="disli" id="ayarlar-btn" aria-label="Ayarlar">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3.2" />
+          <path d="M12 2.8 V6 M12 18 V21.2 M2.8 12 H6 M18 12 H21.2 M5.5 5.5 L7.8 7.8 M16.2 16.2 L18.5 18.5 M18.5 5.5 L16.2 7.8 M7.8 16.2 L5.5 18.5" />
+        </svg>
+      </button>
     </div>
   </header>
 
@@ -55,6 +63,14 @@
         <ul class="days-list" id="days-list"></ul>
       </section>
 
+      <button class="zn-kart" id="zincir-ac">
+        <div class="og-madde-metin">
+          <span class="og-ad">Hadis Zinciri</span>
+          <span class="og-alt">Bir hadis seç, zincir başlat, birlikte okuyalım</span>
+        </div>
+        <span class="og-rozet">önizleme</span>
+      </button>
+
       <p class="footnote">
         Vakitler cihaz üzerinde astronomik hesapla üretilir; Diyanet takvimiyle
         birkaç dakikalık fark olabilir. Hicri tarihlerde 1 günlük fark görülebilir.
@@ -89,6 +105,10 @@
       <div id="ogren-root"></div>
     </section>
   </main>
+
+  <div class="overlay" id="overlay" hidden>
+    <div class="overlay-icerik" id="overlay-root"></div>
+  </div>
 
   <nav class="tabbar" aria-label="Ana gezinme">
     <button class="tab active" data-page="home" aria-label="Ana Sayfa">

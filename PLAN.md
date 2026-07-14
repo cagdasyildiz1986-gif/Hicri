@@ -61,6 +61,10 @@ Hadis zinciri; kullanıcı hesabı, veritabanı ve zamanlanmış bildirim ister.
 - Vakit hassasiyeti: il bazında Diyanet takvimiyle kalibrasyon
 
 ### Aşama 7 — Hadis zinciri (sosyal)
+> **Durum notu:** Arayüz önizlemesi hazırlandı (zincir listesi, katılım,
+> "Okudum" onayı, canlı sayaçlar, zincir başlatma formu) — şimdilik örnek
+> veriyle, yalnızca cihazda çalışıyor. Sunucu + hesap sistemi eklenince
+> gerçek çok kullanıcılı hâle gelecek.
 - **Zincir başlatma:** hadis seçimi (uygulamadaki onaylı hadis havuzundan),
   başlangıç tarihi-saati (ileri tarih olabilir), bitiş tarihi-saati
 - **Katılım:** zincir başlamadan önce katılım açık; "Başlatılan Hadis

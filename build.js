@@ -13,7 +13,7 @@ const outDir = process.argv[2] || join(root, "dist");
 const MODULES = [
   "hijri.js", "prayer.js", "cities.js", "religiousDays.js",
   "daily.js", "zikir.js", "esma.js", "dualar.js", "rehber.js", "ogren.js",
-  "calendar.js", "qibla.js", "app.js",
+  "calendar.js", "qibla.js", "ayarlar.js", "zincir.js", "app.js",
 ];
 
 const js = MODULES.map((f) => {

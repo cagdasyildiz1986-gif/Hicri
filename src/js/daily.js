@@ -20,7 +20,7 @@ const AYETLER = [
   ["O, hanginizin daha güzel amel yapacağını sınamak için ölümü ve hayatı yaratandır.", "Mülk, 2"],
 ];
 
-const HADISLER = [
+export const HADISLER = [
   ["Ameller niyetlere göredir; herkese niyet ettiği şey vardır.", "Buhârî, Bed'ü'l-Vahy 1"],
   ["Müslüman, elinden ve dilinden diğer müslümanların güvende olduğu kimsedir.", "Buhârî, Îmân 4"],
   ["Kolaylaştırın, zorlaştırmayın; müjdeleyin, nefret ettirmeyin.", "Buhârî, İlim 11"],

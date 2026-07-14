@@ -871,6 +871,175 @@ body {
   border-radius: 2px;
 }
 
+/* ---- Üst çubuk sağ küme + ayarlar dişlisi ---- */
+.topbar-sag { display: flex; align-items: center; gap: 0.5rem; }
+.disli {
+  background: none;
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 2px;
+  width: 2.15rem;
+  height: 2.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--adacayi);
+  flex: none;
+}
+.disli svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.disli:hover { color: var(--altin); border-color: var(--adacayi); }
+.disli:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+
+/* ---- Kaplama (ayarlar / zincir) ---- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: var(--zemin-koyu);
+  overflow-y: auto;
+}
+.overlay-icerik {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100%;
+  background: var(--zemin);
+  border-left: 1px solid var(--kart-cizgi);
+  border-right: 1px solid var(--kart-cizgi);
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+/* ---- Ayarlar ---- */
+.ay-liste { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.8rem; }
+.ay-satir {
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.ay-vakit { color: var(--fildisi); font-size: 0.95rem; }
+.ay-chips { margin-top: 0; justify-content: flex-start; }
+.ay-satir > .chip { align-self: flex-start; }
+
+/* ---- Hadis Zinciri ---- */
+.zn-kart {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  background: linear-gradient(135deg, var(--kart), #14402f);
+  border: 1px solid var(--altin);
+  border-radius: 3px;
+  padding: 0.9rem 1rem;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.zn-kart:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+
+.zn-uyari {
+  background: var(--kart);
+  border: 1px dashed var(--kandil);
+  border-radius: 3px;
+  color: var(--kandil);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.9rem;
+  text-align: center;
+}
+.zn-baslat-btn {
+  width: 100%;
+  background: var(--altin);
+  border: none;
+  border-radius: 3px;
+  color: var(--zemin-koyu);
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.7rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+.zn-baslat-btn:hover { background: var(--altin-acik); }
+.zn-baslat-btn:focus-visible { outline: 2px solid var(--fildisi); outline-offset: 2px; }
+
+.zn-meta { font-size: 0.75rem; color: var(--adacayi); margin-top: 0.2rem; }
+.zn-meta b { color: var(--altin-acik); font-weight: 400; }
+.zn-durum.bekliyor { color: var(--adacayi); }
+.zn-durum.aktif { color: var(--altin-acik); }
+.zn-durum.bitti { color: var(--kandil); }
+
+.zn-sayaclar {
+  display: flex;
+  justify-content: space-around;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  padding: 0.8rem 0.5rem;
+}
+.zn-sayaclar .zikir-stat span { font-size: 1.15rem; }
+
+.zn-zaman {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--fildisi);
+}
+.zn-zaman-ad {
+  display: inline-block;
+  width: 6.2rem;
+  color: var(--adacayi);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.zn-eylem {
+  background: var(--altin);
+  border: none;
+  border-radius: 3px;
+  color: var(--zemin-koyu);
+  font: inherit;
+  font-size: 1rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+}
+.zn-eylem:hover { background: var(--altin-acik); }
+.zn-eylem:focus-visible { outline: 2px solid var(--fildisi); outline-offset: 2px; }
+.zn-bilgi {
+  margin: 0;
+  text-align: center;
+  color: var(--altin-acik);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.zn-not { color: var(--adacayi); font-size: 0.78rem; }
+
+.zn-form { display: flex; flex-direction: column; gap: 0.9rem; }
+.zn-etiket {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--adacayi);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+}
+.zn-girdi {
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 2px;
+  color: var(--fildisi);
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.7rem;
+  color-scheme: dark;
+}
+.zn-girdi:focus-visible { outline: 2px solid var(--altin); outline-offset: 1px; }
+
 .footnote {
   color: var(--adacayi);
   font-size: 0.72rem;

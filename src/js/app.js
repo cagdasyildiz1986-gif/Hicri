@@ -9,6 +9,8 @@ import { initZikir } from "./zikir.js";
 import { initOgren } from "./ogren.js";
 import { initCalendar } from "./calendar.js";
 import { initQibla } from "./qibla.js";
+import { initAyarlar } from "./ayarlar.js";
+import { initZincir } from "./zincir.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -126,8 +128,23 @@ function initTabs() {
   });
 }
 
+function overlayAc(init) {
+  const overlay = $("#overlay");
+  const root = $("#overlay-root");
+  overlay.hidden = false;
+  document.body.style.overflow = "hidden";
+  init(root, () => {
+    overlay.hidden = true;
+    root.innerHTML = "";
+    document.body.style.overflow = "";
+  });
+  overlay.scrollTop = 0;
+}
+
 export function start() {
   $("#city-select").addEventListener("change", (e) => setCity(e.target.value));
+  $("#ayarlar-btn").addEventListener("click", () => overlayAc(initAyarlar));
+  $("#zincir-ac").addEventListener("click", () => overlayAc(initZincir));
   initTabs();
   initZikir($("#zikir-root"));
   initOgren($("#ogren-root"));
