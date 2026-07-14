@@ -10,6 +10,8 @@
   --fildisi: #f3ebd8;
   --adacayi: #9db8a9;
   --kandil: #d98f6b;         /* kandil gecesi vurgusu — bakır */
+  --arap-yazi: "Scheherazade New", "Amiri", "Traditional Arabic",
+               "Arabic Typesetting", "Geeza Pro", serif;
 }
 
 * { box-sizing: border-box; }
@@ -173,6 +175,24 @@ body {
 .next-time {
   color: var(--altin);
   font-size: 1rem;
+}
+
+/* Vakitler arası ilerleme çubuğu */
+.cd-bar {
+  margin: 1rem auto 0;
+  width: 78%;
+  height: 3px;
+  background: var(--kart-cizgi);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.cd-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(to right, var(--altin), var(--altin-acik));
+  border-radius: 999px;
+  transition: width 1s linear;
 }
 
 /* ---- Vakitler ---- */
@@ -355,6 +375,7 @@ body {
   justify-content: center;
 }
 .zikir-arapca {
+  font-family: var(--arap-yazi);
   font-size: 1.7rem;
   color: var(--altin-acik);
   direction: rtl;
@@ -407,6 +428,39 @@ body {
   font-size: 1rem;
   font-variant-numeric: tabular-nums;
 }
+
+/* Haftalık zikir grafiği */
+.zg-grafik {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 0.5rem;
+}
+.zg-taban { stroke: var(--kart-cizgi); stroke-width: 1; }
+.zg-bar { fill: var(--adacayi); opacity: 0.55; }
+.zg-bar.bugun { fill: var(--altin); opacity: 1; }
+.zg-bar.bos { fill: var(--kart-cizgi); opacity: 1; }
+.zg-gun {
+  fill: var(--adacayi);
+  font-size: 10px;
+  text-anchor: middle;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+}
+.zg-gun.bugun { fill: var(--altin-acik); }
+.zg-deger {
+  fill: var(--altin-acik);
+  font-size: 11px;
+  text-anchor: middle;
+  font-variant-numeric: tabular-nums;
+}
+.zg-toplam {
+  margin: 0.2rem 0 0;
+  text-align: center;
+  color: var(--adacayi);
+  font-size: 0.82rem;
+}
+.zg-toplam span { color: var(--altin-acik); font-variant-numeric: tabular-nums; }
 
 .zikir-alt {
   display: flex;
@@ -523,6 +577,7 @@ body {
 .esma-anlam { color: var(--adacayi); font-size: 0.82rem; line-height: 1.45; }
 .esma-arapca {
   flex: none;
+  font-family: var(--arap-yazi);
   font-size: 1.35rem;
   color: var(--altin-acik);
   direction: rtl;
@@ -764,6 +819,7 @@ body {
 }
 .og-arapca {
   margin: 0;
+  font-family: var(--arap-yazi);
   font-size: 1.75rem;
   line-height: 2.1;
   color: var(--altin-acik);

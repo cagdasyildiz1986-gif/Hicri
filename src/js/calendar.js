@@ -3,7 +3,7 @@
 
 import { toHijri, fromHijri, hijriMonthName } from "./hijri.js";
 import { prayerTimes } from "./prayer.js";
-import { religiousDaysBetween } from "./religiousDays.js";
+import { religiousDaysBetween, daysUntil } from "./religiousDays.js";
 
 const GUNLER = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
 const ayFmt = new Intl.DateTimeFormat("tr-TR", { month: "long", year: "numeric" });
@@ -75,6 +75,7 @@ export function initCalendar(root, getCity) {
       <div class="tk-alt-butonlar">
         <button class="tk-bugun-btn" id="tk-bugun">Bugüne Dön</button>
         <button class="tk-bugun-btn" id="tk-imsakiye">Ramazan İmsakiyesi</button>
+        <button class="tk-bugun-btn" id="tk-yillik">Yıllık Dini Günler</button>
       </div>
     `;
 
@@ -95,6 +96,52 @@ export function initCalendar(root, getCity) {
     root.querySelector("#tk-imsakiye").addEventListener("click", () => {
       mod = "imsakiye";
       renderImsakiye();
+    });
+    root.querySelector("#tk-yillik").addEventListener("click", () => {
+      mod = "yillik";
+      renderYillik();
+    });
+  }
+
+  const TIP_ADI = { kandil: "Kandil", bayram: "Bayram", gun: "Mübarek Gün" };
+  const uzunTarihFmt = new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric", month: "long", year: "numeric", weekday: "long",
+  });
+
+  // Önümüzdeki 12 ayın tüm dini günleri
+  function renderYillik() {
+    const bas = new Date(bugun.getFullYear(), bugun.getMonth(), bugun.getDate());
+    const son = new Date(bas.getFullYear() + 1, bas.getMonth(), bas.getDate());
+    const gunler = religiousDaysBetween(bas, son);
+
+    root.innerHTML = `
+      <div class="tk-nav">
+        <button class="tk-btn" id="yl-geri" aria-label="Takvime dön">‹</button>
+        <div class="tk-baslik">
+          <div class="tk-ay">Dini Günler</div>
+          <div class="tk-hicri-ay">Önümüzdeki 12 ay</div>
+        </div>
+        <span class="tk-btn gizli"></span>
+      </div>
+      <ul class="days-list">
+        ${gunler.map((g) => {
+          const n = daysUntil(bugun, g.date);
+          const ne = n === 0 ? "Bugün" : n === 1 ? "Yarın" : `${n} gün`;
+          return `<li class="day-row ${g.type}">
+            <div class="day-info">
+              <span class="day-name">${g.name}</span>
+              <span class="day-date">${uzunTarihFmt.format(g.date)}${g.eve ? " akşamı" : ""}</span>
+            </div>
+            <div class="day-when">
+              <span class="day-count${n === 0 ? " today" : ""}">${ne}</span>
+              <span class="day-type">${TIP_ADI[g.type] || ""}</span>
+            </div>
+          </li>`;
+        }).join("")}
+      </ul>`;
+    root.querySelector("#yl-geri").addEventListener("click", () => {
+      mod = "takvim";
+      renderTakvim();
     });
   }
 
@@ -147,6 +194,7 @@ export function initCalendar(root, getCity) {
 
   function render() {
     if (mod === "imsakiye") renderImsakiye();
+    else if (mod === "yillik") renderYillik();
     else renderTakvim();
   }
 

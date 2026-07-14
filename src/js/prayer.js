@@ -84,6 +84,19 @@ export const PRAYER_NAMES = [
   ["yatsi", "Yatsı"],
 ];
 
+// Şu andan önceki son vakit; gün başındaysa dünün yatsısı
+export function prevPrayer(now, lat, lon) {
+  const today = prayerTimes(now, lat, lon);
+  let son = null;
+  for (const [key, name] of PRAYER_NAMES) {
+    if (today[key] && today[key] <= now) son = { key, name, time: today[key] };
+  }
+  if (son) return son;
+  const dun = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const t = prayerTimes(dun, lat, lon);
+  return { key: "yatsi", name: "Yatsı", time: t.yatsi };
+}
+
 // Şu andan sonraki ilk vakit; gün bittiyse yarının imsağı
 export function nextPrayer(now, lat, lon) {
   const today = prayerTimes(now, lat, lon);

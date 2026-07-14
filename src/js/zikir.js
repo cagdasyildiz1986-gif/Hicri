@@ -12,9 +12,55 @@ const ZIKIR_PRESETS = [
 
 const TARGETS = [33, 99, 100, 500, 1000, 0]; // 0 = serbest
 
-function todayKey() {
-  const d = new Date();
+function todayKey(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+const GUN_KISA = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+
+// Son 7 günün zikir sayıları — bugün son sırada
+function haftaVerisi(stats) {
+  const veri = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    veri.push({
+      gun: GUN_KISA[d.getDay()],
+      sayi: stats[todayKey(d)] || 0,
+      bugun: i === 0,
+    });
+  }
+  return veri;
+}
+
+// Haftalık çubuk grafik: tek seri, bugün vurgulu, yalnız bugünün değeri etiketli
+function haftaGrafigiSVG(stats) {
+  const veri = haftaVerisi(stats);
+  const W = 300, H = 96, taban = 72, solPay = 6;
+  const adim = (W - solPay * 2) / 7;
+  const cubukW = 22;
+  const max = Math.max(1, ...veri.map((v) => v.sayi));
+
+  const cubuklar = veri.map((v, i) => {
+    const x = solPay + i * adim + (adim - cubukW) / 2;
+    const h = v.sayi === 0 ? 2 : Math.max(3, (v.sayi / max) * 54);
+    const y = taban - h;
+    return `
+      <g>
+        <rect class="zg-bar${v.bugun ? " bugun" : ""}${v.sayi === 0 ? " bos" : ""}"
+              x="${x}" y="${y}" width="${cubukW}" height="${h}" rx="3">
+          <title>${v.gun}: ${v.sayi} zikir</title>
+        </rect>
+        ${v.bugun && v.sayi > 0 ? `<text class="zg-deger" x="${x + cubukW / 2}" y="${y - 6}">${v.sayi}</text>` : ""}
+        <text class="zg-gun${v.bugun ? " bugun" : ""}" x="${x + cubukW / 2}" y="${taban + 16}">${v.gun}</text>
+      </g>`;
+  }).join("");
+
+  return `<svg viewBox="0 0 ${W} ${H}" class="zg-grafik" role="img"
+    aria-label="Son 7 günün zikir sayıları">
+    <line class="zg-taban" x1="${solPay}" y1="${taban}" x2="${W - solPay}" y2="${taban}" />
+    ${cubuklar}
+  </svg>`;
 }
 
 function loadZikirState() {
@@ -58,6 +104,11 @@ export function initZikir(root) {
 
     <div class="chips" id="zikir-secim"></div>
     <div class="chips" id="hedef-secim"></div>
+
+    <div class="bosluk"></div>
+    <h3 class="og-bolum-baslik">Son 7 Gün</h3>
+    <div id="zikir-grafik"></div>
+    <p class="zg-toplam">Toplam <span id="zikir-toplam">0</span> zikir</p>
   `;
 
   const $ = (id) => root.querySelector("#" + id);
@@ -86,6 +137,9 @@ export function initZikir(root) {
     $("zikir-hedef").textContent = st.target ? `/ ${st.target}` : "";
     $("zikir-tur").textContent = st.tur;
     $("zikir-bugun").textContent = st.stats[todayKey()] || 0;
+    $("zikir-grafik").innerHTML = haftaGrafigiSVG(st.stats);
+    $("zikir-toplam").textContent = Object.values(st.stats)
+      .reduce((a, b) => a + b, 0);
     const oran = st.target ? Math.min(st.count / st.target, 1) : 0;
     ring.style.strokeDashoffset = RING_LEN * (1 - oran);
   }

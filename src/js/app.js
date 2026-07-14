@@ -1,7 +1,7 @@
 // Ana ekran — Hicri tarih, sıradaki vakte geri sayım, günün vakitleri, dini günler
 
 import { toHijri, formatHijri } from "./hijri.js";
-import { prayerTimes, nextPrayer, PRAYER_NAMES } from "./prayer.js";
+import { prayerTimes, nextPrayer, prevPrayer, PRAYER_NAMES } from "./prayer.js";
 import { CITIES } from "./cities.js";
 import { upcomingDays, daysUntil } from "./religiousDays.js";
 import { gununIcerigi } from "./daily.js";
@@ -106,6 +106,12 @@ function renderCountdown() {
   $("#next-name").textContent = `${next.name} vaktine`;
   $("#countdown").textContent = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
   $("#next-time").textContent = `${next.name}: ${clockFmt.format(next.time)}`;
+
+  // İki vakit arasındaki ilerleme çubuğu
+  const onceki = prevPrayer(now, city.lat, city.lon);
+  const oran = Math.min(1, Math.max(0,
+    (now - onceki.time) / (next.time - onceki.time)));
+  $("#cd-doluluk").style.width = (oran * 100).toFixed(2) + "%";
 }
 
 let lastMinute = -1;
