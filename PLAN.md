@@ -45,6 +45,13 @@ Hadis zinciri; kullanıcı hesabı, veritabanı ve zamanlanmış bildirim ister.
   hangi dua okunur, kadın/erkek farkları, 5 vakit + cuma + bayram namazı
 
 ### Aşama 5 — Kur'an öğreniyorum
+> **Sonraki oturum talimatı (ağ izni açık ortamda):**
+> 1. `node scripts/veri-indir.js` — Yasin verisini indirir, doğrular,
+>    `src/js/yasinData.js` dosyasını üretir (arayüz hazır, kendiliğinden açılır)
+> 2. `node build.js` ile derleyip önizlemeyi yenile
+> 3. Aynı yaklaşımla tam Kur'an verisi + sure gezgini eklenecek
+>    (tam Kur'an ~5 MB olduğundan web önizlemesine yalnız Yasin gömülür;
+>    tam veri mobil pakete girer)
 - Sure/ayet gezgini: Arapça metin + üç meal yan yana
 - **Mealler:** Diyanet meali + Elmalılı Hamdi Yazır (kamu malı).
   > **Karar (önerilen):** Üçüncü meal telif izni netleşince eklenecek

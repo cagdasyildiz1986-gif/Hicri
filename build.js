@@ -12,7 +12,8 @@ const outDir = process.argv[2] || join(root, "dist");
 // Bağımlılık sırasına göre; import/export satırları ayıklanarak birleştirilir
 const MODULES = [
   "hijri.js", "prayer.js", "cities.js", "religiousDays.js",
-  "daily.js", "zikir.js", "esma.js", "dualar.js", "rehber.js", "ogren.js",
+  "daily.js", "zikir.js", "esma.js", "dualar.js", "rehber.js", "yasinData.js",
+  "ogren.js",
   "calendar.js", "qibla.js", "ayarlar.js", "zincir.js", "app.js",
 ];
 

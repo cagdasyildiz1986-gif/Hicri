@@ -867,6 +867,40 @@ body {
   user-select: none;
 }
 
+/* Yasin okuma görünümü */
+.ys-liste {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.ys-ayet {
+  display: flex;
+  gap: 0.8rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  padding: 0.85rem 0.9rem;
+}
+.ys-govde { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+.ys-arapca {
+  margin: 0;
+  font-family: var(--arap-yazi);
+  font-size: 1.45rem;
+  line-height: 2;
+  color: var(--altin-acik);
+  direction: rtl;
+  text-align: right;
+}
+.ys-meal {
+  margin: 0;
+  color: var(--adacayi);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
 .og-rehber { display: flex; flex-direction: column; gap: 0.9rem; }
 .og-adimlar {
   margin: 0;

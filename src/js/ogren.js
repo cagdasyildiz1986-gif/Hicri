@@ -3,6 +3,7 @@
 import { initEsma } from "./esma.js";
 import { NAMAZ_SURELERI, NAMAZ_DUALARI, GUNLUK_DUALAR } from "./dualar.js";
 import { REKAT_TABLOSU, ABDEST_ADIMLARI, NAMAZ_ADIMLARI, NAMAZ_NOTLARI } from "./rehber.js";
+import { YASIN } from "./yasinData.js";
 
 const MENU = [
   { id: "esma", ad: "Esmaü'l-Hüsna", alt: "Allah'ın 99 güzel ismi" },
@@ -10,7 +11,9 @@ const MENU = [
   { id: "namazdua", ad: "Namaz Duaları", alt: "Sübhâneke, Ettehiyyâtü, salavatlar, Kunut" },
   { id: "gunlukdua", ad: "Dua Öğreniyorum", alt: "Günlük hayatın duaları" },
   { id: "rehber", ad: "Namaz Nasıl Kılınır?", alt: "Abdest, rekâtlar ve adım adım kılınış" },
-  { id: "yasin", ad: "Yasin-i Şerif", alt: "Hazırlanıyor", rozet: "yakında" },
+  YASIN
+    ? { id: "yasin", ad: "Yasin-i Şerif", alt: "83 ayet — Arapça ve iki meal" }
+    : { id: "yasin", ad: "Yasin-i Şerif", alt: "Hazırlanıyor", rozet: "yakında" },
 ];
 
 const LISTELER = {
@@ -146,19 +149,57 @@ export function initOgren(root) {
   }
 
   function yasinCiz() {
-    root.innerHTML = `
-      ${geriBar("Yasin-i Şerif")}
-      <div class="og-detay">
-        <p class="og-arapca" style="font-size:2rem">يٰسٓ</p>
-        <p class="og-anlam" style="text-align:center">
-          Yasin-i Şerif'in 83 ayetlik tam metni (Arapça, okunuş ve meal),
-          doğrulanmış kaynaktan yüklenerek eklenecektir. Kur'an metninde tek
-          harflik hataya dahi yer olmadığı için bu bölüm, metin harf harf
-          doğrulanmadan yayımlanmayacaktır.
-        </p>
-        <p class="footnote">Bkz. PLAN.md — Aşama 5: Kur'an verisi hazırlığı.</p>
-      </div>`;
-    baglaGeri();
+    if (!YASIN) {
+      root.innerHTML = `
+        ${geriBar("Yasin-i Şerif")}
+        <div class="og-detay">
+          <p class="og-arapca" style="font-size:2rem">يٰسٓ</p>
+          <p class="og-anlam" style="text-align:center">
+            Yasin-i Şerif'in 83 ayetlik tam metni (Arapça ve mealler),
+            doğrulanmış kaynaktan yüklenerek eklenecektir. Kur'an metninde tek
+            harflik hataya dahi yer olmadığı için bu bölüm, metin harf harf
+            doğrulanmadan yayımlanmayacaktır.
+          </p>
+          <p class="footnote">Bkz. PLAN.md — Aşama 5: Kur'an verisi hazırlığı.</p>
+        </div>`;
+      baglaGeri();
+      return;
+    }
+
+    let meal = localStorage.getItem("hicri.yasin.meal") || "diyanet";
+    const MEAL_ADI = { diyanet: "Diyanet İşleri", elmalili: "Elmalılı Hamdi Yazır" };
+
+    function icerikCiz() {
+      root.innerHTML = `
+        ${geriBar("Yasin-i Şerif")}
+        <div class="chips" style="margin-top:0">
+          <button class="chip${meal === "diyanet" ? " on" : ""}" data-meal="diyanet">Diyanet Meali</button>
+          <button class="chip${meal === "elmalili" ? " on" : ""}" data-meal="elmalili">Elmalılı Meali</button>
+        </div>
+        <p class="footnote">Bismillâhirrahmânirrahîm</p>
+        <ol class="ys-liste">
+          ${YASIN.ayetler.map((a) => `
+            <li class="ys-ayet">
+              <span class="esma-no">${a.no}</span>
+              <div class="ys-govde">
+                <p class="ys-arapca">${a.arapca}</p>
+                <p class="ys-meal">${a[meal]}</p>
+              </div>
+            </li>`).join("")}
+        </ol>
+        <p class="footnote">Meal: ${MEAL_ADI[meal]} · Kaynak: api.alquran.cloud</p>`;
+      baglaGeri();
+      root.querySelectorAll("[data-meal]").forEach((b) =>
+        b.addEventListener("click", () => {
+          meal = b.dataset.meal;
+          localStorage.setItem("hicri.yasin.meal", meal);
+          const y = window.scrollY;
+          icerikCiz();
+          window.scrollTo(0, y);
+        })
+      );
+    }
+    icerikCiz();
   }
 
   function cizim(durum) {
