@@ -1103,6 +1103,102 @@ body {
 .hatirlatma-banner.acik { transform: translate(-50%, 0); }
 @media (prefers-reduced-motion: reduce) { .hatirlatma-banner { transition: none; } }
 
+/* ---- Hatim Takibi ---- */
+.hatim-kutla {
+  text-align: center;
+  background: linear-gradient(135deg, #143a2a, var(--kart));
+  border: 1px solid var(--altin);
+  border-radius: 4px;
+  color: var(--altin-acik);
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.9rem;
+  line-height: 1.5;
+}
+.hatim-kutla span { color: var(--adacayi); font-size: 0.85rem; }
+.hatim-ozet {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 4px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.3rem;
+}
+.hatim-sayac { flex: none; text-align: center; }
+.hatim-sayac span { display: block; font-size: 1.7rem; color: var(--altin-acik); font-variant-numeric: tabular-nums; }
+.hatim-sayac label { font-size: 0.7rem; color: var(--adacayi); }
+.hatim-ilerleme { flex: 1; min-width: 0; }
+.hatim-cubuk {
+  height: 0.6rem;
+  background: var(--zemin-koyu);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.35rem;
+}
+.hatim-dolu {
+  height: 100%;
+  background: linear-gradient(to right, var(--altin), var(--altin-acik));
+  transition: width 0.35s ease;
+}
+@media (prefers-reduced-motion: reduce) { .hatim-dolu { transition: none; } }
+.hatim-liste {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.hatim-cuz { display: flex; align-items: stretch; gap: 0.6rem; }
+.hatim-tik {
+  flex: none;
+  width: 2.4rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  color: var(--altin-acik);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.hatim-cuz.okundu .hatim-tik { background: var(--altin); border-color: var(--altin); color: var(--zemin-koyu); }
+.hatim-tik:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+.hatim-git {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  padding: 0.6rem 0.9rem;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.hatim-git:hover { border-color: var(--adacayi); }
+.hatim-git:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+.hatim-cuz-no { color: var(--fildisi); font-size: 0.98rem; }
+.hatim-cuz.okundu .hatim-cuz-no { color: var(--altin-acik); }
+.hatim-cuz-yer { color: var(--adacayi); font-size: 0.8rem; }
+
+/* Hadis öğrenme rozeti */
+.hd-rozet {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--adacayi);
+  font-size: 0.8rem;
+}
+.hd-rozet.on { background: var(--altin); border-color: var(--altin); color: var(--zemin-koyu); }
+
 .og-rehber { display: flex; flex-direction: column; gap: 0.9rem; }
 .og-adimlar {
   margin: 0;
