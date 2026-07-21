@@ -44,6 +44,17 @@ function asrHourAngle(factor, lat, decl) {
   return deg(Math.acos(cosH)) / 15;
 }
 
+// İl bazında ince ayar (dakika). Vakitler cihazda astronomik hesaplanır;
+// kullanıcının ilinin Diyanet takvimiyle küçük farkı olursa buradan telafi
+// edilir. app.js, seçili ilin kalibrasyonunu setKalibrasyon ile yükler; böylece
+// tüm gösterimler (ana ekran, takvim, imsakiye) ve ezan uyarısı aynı ayarı kullanır.
+const SIFIR_KAL = { imsak: 0, gunes: 0, ogle: 0, ikindi: 0, aksam: 0, yatsi: 0 };
+let KALIBRASYON = { ...SIFIR_KAL };
+
+export function setKalibrasyon(o) {
+  KALIBRASYON = { ...SIFIR_KAL, ...(o || {}) };
+}
+
 // Bir günün vakitleri. tzOffset: saat (Türkiye için 3).
 export function prayerTimes(date, lat, lon, tzOffset = 3) {
   // Yerel öğlen civarını referans al
@@ -58,20 +69,20 @@ export function prayerTimes(date, lat, lon, tzOffset = 3) {
   const ishaH = hourAngle(17, lat, decl);
   const asrH = asrHourAngle(1, lat, decl);
 
-  const t = (h) => {
+  const t = (h, dk) => {
     if (h == null) return null;
     const dt = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    dt.setMinutes(Math.round(h * 60));
+    dt.setMinutes(Math.round(h * 60) + (dk || 0)); // +il kalibrasyonu (dakika)
     return dt;
   };
 
   return {
-    imsak: t(fajrH != null ? transit - fajrH : null),
-    gunes: t(sunH != null ? transit - sunH : null),
-    ogle: t(transit + 5 / 60), // küçük temkin payı
-    ikindi: t(asrH != null ? transit + asrH : null),
-    aksam: t(sunH != null ? transit + sunH + 7 / 60 : null), // Diyanet temkini ~7 dk
-    yatsi: t(ishaH != null ? transit + ishaH : null),
+    imsak: t(fajrH != null ? transit - fajrH : null, KALIBRASYON.imsak),
+    gunes: t(sunH != null ? transit - sunH : null, KALIBRASYON.gunes),
+    ogle: t(transit + 5 / 60, KALIBRASYON.ogle), // küçük temkin payı
+    ikindi: t(asrH != null ? transit + asrH : null, KALIBRASYON.ikindi),
+    aksam: t(sunH != null ? transit + sunH + 7 / 60 : null, KALIBRASYON.aksam), // Diyanet temkini ~7 dk
+    yatsi: t(ishaH != null ? transit + ishaH : null, KALIBRASYON.yatsi),
   };
 }
 
