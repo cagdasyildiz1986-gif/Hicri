@@ -50,7 +50,7 @@ export const calCan = calKisa;
 
 // Uzunca hatırlatma ezgisi (Hicaz benzeri, yumuşak çan). Gerçek ezan kaydı
 // eklenene kadar "ezan" modunda çalar. Durdurma fonksiyonu döndürür.
-function ezgiCal() {
+function ezgiCal(onBitti) {
   try {
     const ctx = ctxAl();
     const t0 = ctx.currentTime + 0.05;
@@ -77,36 +77,46 @@ function ezgiCal() {
       [Fs, 2.6, 1.1], [Eb, 3.2, 1.2], [D, 3.95, 1.8],
     ];
     const oscs = dizi.map(([f, dt, sure]) => nota(f, dt, sure));
+    const sure = 5.9;
+    const zaman = setTimeout(() => onBitti && onBitti(), sure * 1000);
     return () => {
+      clearTimeout(zaman);
       try {
         usta.gain.cancelScheduledValues(ctx.currentTime);
         usta.gain.setValueAtTime(0.0001, ctx.currentTime);
         oscs.forEach((o) => { try { o.stop(); } catch { /* zaten durdu */ } });
       } catch { /* yok say */ }
+      onBitti && onBitti();
     };
   } catch {
-    return () => {};
+    return () => { onBitti && onBitti(); };
   }
 }
 
-// "ezan" modu: önce gerçek kayıt (sounds/ezan.mp3), yoksa ezgi. Durdurma döndürür.
-function calEzan() {
+// "ezan" modu: önce gerçek kayıt (sounds/ezan.mp3), yoksa ezgi. onBitti ses
+// (kendiliğinden ya da durdurulunca) bitince bir kez çağrılır. Durdurma döndürür.
+function calEzan(onBitti) {
   let ezgiDurdur = null;
   let audio = null;
+  let bitti = false;
+  const bir = () => { if (!bitti) { bitti = true; onBitti && onBitti(); } };
   try {
     audio = new Audio(new URL("sounds/ezan.mp3", document.baseURI).href);
-    audio.addEventListener("error", () => { if (!ezgiDurdur) ezgiDurdur = ezgiCal(); });
-    audio.play().catch(() => { if (!ezgiDurdur) ezgiDurdur = ezgiCal(); });
+    audio.addEventListener("error", () => { if (!ezgiDurdur && !bitti) ezgiDurdur = ezgiCal(bir); });
+    audio.addEventListener("ended", bir);
+    audio.play().catch(() => { if (!ezgiDurdur && !bitti) ezgiDurdur = ezgiCal(bir); });
   } catch {
-    ezgiDurdur = ezgiCal();
+    ezgiDurdur = ezgiCal(bir);
   }
   return () => {
     try { if (audio) { audio.pause(); audio.currentTime = 0; } } catch { /* yok say */ }
-    if (ezgiDurdur) ezgiDurdur();
+    if (ezgiDurdur) { ezgiDurdur(); return; } // ezgiDurdur zaten onBitti çağırır
+    bir();
   };
 }
 
-// Ekranın üstünde kısa süreli banner; uzun ses çalarken "Durdur" düğmesi.
+// Ekranın üstünde banner. durdur verilirse "Durdur" düğmesi çıkar ve banner,
+// ses bitene/durdurulana dek kalır (kısa uyarılar birkaç saniyede kapanır).
 function banner(metin, durdur) {
   let el = document.getElementById("ezan-banner");
   if (!el) {
@@ -119,23 +129,25 @@ function banner(metin, durdur) {
     + (durdur ? `<button class="ezan-durdur" type="button">Durdur</button>` : "");
   el.querySelector(".ezan-banner-metin").textContent = metin;
   el.classList.add("acik");
-  const kapat = () => el.classList.remove("acik");
-  el.onclick = kapat;
+  el.onclick = () => { if (!durdur) bannerGizle(); };
   if (durdur) {
     el.querySelector(".ezan-durdur").addEventListener("click", (e) => {
       e.stopPropagation();
       durdur();
-      aktifDurdur = null;
-      kapat();
     });
   }
   clearTimeout(banner._z);
-  banner._z = setTimeout(kapat, durdur ? 20000 : 8000);
+  if (!durdur) banner._z = setTimeout(bannerGizle, 8000);
 }
 
-// Çalan sesi durdur (yeni uyarı gelince veya kullanıcı isteyince).
+function bannerGizle() {
+  document.getElementById("ezan-banner")?.classList.remove("acik");
+}
+
+// Çalan ezanı durdur (yeni uyarı gelince veya kullanıcı isteyince).
 export function ezanDurdur() {
   if (aktifDurdur) { aktifDurdur(); aktifDurdur = null; }
+  bannerGizle();
 }
 
 // Bir vakit girdiğinde tercihe göre uyarı ver.
@@ -148,7 +160,7 @@ export function vakitUyar(vakitAd, mod) {
     return;
   }
   if (mod === "ezan") {
-    aktifDurdur = calEzan();
+    aktifDurdur = calEzan(() => { aktifDurdur = null; bannerGizle(); });
     banner(`🕌 ${vakitAd} vakti — ezan`, ezanDurdur);
     navigator.vibrate?.(200);
     return;
@@ -157,11 +169,17 @@ export function vakitUyar(vakitAd, mod) {
   calKisa();
 }
 
-// Ayarlar önizlemesi için: seçilen modu bir kez çalıştır (banner'sız ses/titreşim).
+// Ayarlar önizlemesi: kısa ses/titreşim tek seferlik. Ezan uzun olduğu için
+// mod seçiminde otomatik çalmaz; ezanı ayrı "Ezanı Dinle" düğmesi yönetir.
 export function moduOnizle(mod) {
   if (mod === "ses") return calKisa();
   if (mod === "titresim") return void navigator.vibrate?.([120, 60, 120]);
-  if (mod === "ezan") { ezanDurdur(); aktifDurdur = calEzan(); }
+}
+
+// Ayarlar "Ezanı Dinle" önizlemesi: ezanı çalar, durdurma fonksiyonu döndürür;
+// onBitti ses bitince/durdurulunca çağrılır (düğme etiketini sıfırlamak için).
+export function ezanOnizle(onBitti) {
+  return calEzan(onBitti);
 }
 
 let sonKontrol = null;
