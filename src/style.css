@@ -1039,6 +1039,23 @@ body {
 }
 .ezan-banner.acik { transform: translate(-50%, 0); }
 @media (prefers-reduced-motion: reduce) { .ezan-banner { transition: none; } }
+.ezan-banner { display: flex; align-items: center; gap: 0.8rem; }
+.ezan-durdur {
+  flex: none;
+  background: var(--altin);
+  border: none;
+  border-radius: 999px;
+  color: var(--zemin-koyu);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  cursor: pointer;
+}
+.ezan-durdur:focus-visible { outline: 2px solid var(--fildisi); outline-offset: 2px; }
+/* Ayarlar: dinleme düğmeleri yan yana */
+.ay-dinle { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.ay-dinle .tk-bugun-btn { flex: 1; min-width: 9rem; }
 
 .og-rehber { display: flex; flex-direction: column; gap: 0.9rem; }
 .og-adimlar {

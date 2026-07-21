@@ -3,7 +3,7 @@
 // tercihler şimdiden saklanır.
 
 import { PRAYER_NAMES } from "./prayer.js";
-import { calCan } from "./ezan.js";
+import { calKisa, moduOnizle } from "./ezan.js";
 
 const SES_SECENEKLERI = [
   ["ezan", "Ezan"],
@@ -37,7 +37,7 @@ function kaydet(a) {
 }
 
 // Kısa bildirim sesi önizlemesi — çan sesi ezan.js'te paylaşılır.
-const onizlemeSesi = calCan;
+const onizlemeSesi = calKisa;
 
 export function initAyarlar(root, kapat) {
   const a = getAyarlar();
@@ -52,8 +52,9 @@ export function initAyarlar(root, kapat) {
 
       <h3 class="og-bolum-baslik">Vakit Bildirimleri</h3>
       <p class="footnote" style="text-align:left">
-        Sesli bildirimler ve ezan, uygulamanın Android/iOS sürümünde çalışacak;
-        tercihlerin şimdiden kaydediliyor.</p>
+        Uygulama açıkken vakit girince, seçtiğin tercihe göre ses/titreşim çalar
+        ve ekranda uyarı çıkar. Uygulama kapalıyken bildirim, Android/iOS
+        sürümünde eklenecek.</p>
       <div class="ay-liste">
         ${PRAYER_NAMES.map(([key, ad]) => `
           <div class="ay-satir">
@@ -67,7 +68,12 @@ export function initAyarlar(root, kapat) {
       </div>
 
       <div class="bosluk"></div>
-      <button class="tk-bugun-btn" id="ay-onizle">Kısa Sesi Dinle</button>
+      <div class="ay-dinle">
+        <button class="tk-bugun-btn" id="ay-onizle">Kısa Sesi Dinle</button>
+        <button class="tk-bugun-btn" id="ay-ezan-dinle">Ezanı Dinle</button>
+      </div>
+      <p class="footnote" style="text-align:left">Gerçek ezan kaydı (telifsiz)
+      eklenene dek "ezan" seçeneğinde saygılı bir hatırlatma ezgisi çalar.</p>
 
       <h3 class="og-bolum-baslik" style="margin-top:1.2rem">Dini Gün Hatırlatmaları</h3>
       <div class="ay-satir">
@@ -82,6 +88,7 @@ export function initAyarlar(root, kapat) {
 
     root.querySelector("#ay-kapat").addEventListener("click", kapat);
     root.querySelector("#ay-onizle").addEventListener("click", onizlemeSesi);
+    root.querySelector("#ay-ezan-dinle").addEventListener("click", () => moduOnizle("ezan"));
     root.querySelector("#ay-kandil").addEventListener("click", () => {
       a.kandilHatirlatma = !a.kandilHatirlatma;
       kaydet(a);
@@ -91,8 +98,7 @@ export function initAyarlar(root, kapat) {
       b.addEventListener("click", () => {
         a.sesler[b.dataset.vakit] = b.dataset.ses;
         kaydet(a);
-        if (b.dataset.ses === "titresim") navigator.vibrate?.(60);
-        if (b.dataset.ses === "ses") onizlemeSesi();
+        moduOnizle(b.dataset.ses);
         ciz();
       })
     );
