@@ -4,8 +4,10 @@ import { initEsma } from "./esma.js";
 import { NAMAZ_SURELERI, NAMAZ_DUALARI, GUNLUK_DUALAR } from "./dualar.js";
 import { REKAT_TABLOSU, ABDEST_ADIMLARI, NAMAZ_ADIMLARI, NAMAZ_NOTLARI } from "./rehber.js";
 import { YASIN } from "./yasinData.js";
+import { SURE_META } from "./sureMeta.js";
 
 const MENU = [
+  { id: "kuran", ad: "Kur'an-ı Kerim", alt: "114 sure — Arapça ve iki meal" },
   { id: "esma", ad: "Esmaü'l-Hüsna", alt: "Allah'ın 99 güzel ismi" },
   { id: "sureler", ad: "Namaz Sureleri", alt: "Fâtiha, İhlâs, Kevser, Felâk, Nâs" },
   { id: "namazdua", ad: "Namaz Duaları", alt: "Sübhâneke, Ettehiyyâtü, salavatlar, Kunut" },
@@ -21,6 +23,36 @@ const LISTELER = {
   namazdua: { baslik: "Namaz Duaları", veri: NAMAZ_DUALARI },
   gunlukdua: { baslik: "Dua Öğreniyorum", veri: GUNLUK_DUALAR },
 };
+
+// Tam Kur'an verisi (kuran.json) bir kez indirilip burada saklanır;
+// Öğren sekmesi yeniden açılsa da tekrar indirilmez.
+let KURAN_CACHE = null;
+const MEAL_IDX = { diyanet: 1, elmalili: 2 };
+const MEAL_AD = { diyanet: "Diyanet İşleri", elmalili: "Elmalılı Hamdi Yazır" };
+
+// Diyanet ve Elmalılı mealleri bazı ayetleri birleştirerek çevirir; kaynak,
+// aynı meali o ayet grubunun her numarasına tekrar yazar. Aynı meali paylaşan
+// ardışık ayetleri tek kartta gruplarız: Arapçalar alt alta, meal bir kez,
+// numara aralık ("2–4"). satirlar: [{ no, ar, meal }]
+function mealGruplariHTML(satirlar) {
+  const gruplar = [];
+  for (const s of satirlar) {
+    const son = gruplar[gruplar.length - 1];
+    if (son && son.meal === s.meal) { son.arlar.push(s.ar); son.sonNo = s.no; }
+    else gruplar.push({ ilkNo: s.no, sonNo: s.no, meal: s.meal, arlar: [s.ar] });
+  }
+  return gruplar.map((g) => {
+    const aralik = g.ilkNo !== g.sonNo;
+    const no = aralik ? `${g.ilkNo}–${g.sonNo}` : g.ilkNo;
+    return `<li class="ys-ayet">
+      <span class="esma-no${aralik ? " kr-no-aralik" : ""}">${no}</span>
+      <div class="ys-govde">
+        ${g.arlar.map((ar) => `<p class="ys-arapca">${ar}</p>`).join("")}
+        <p class="ys-meal">${g.meal}</p>
+      </div>
+    </li>`;
+  }).join("");
+}
 
 export function initOgren(root) {
   let gecmis = []; // görünüm yığını: geri tuşu için
@@ -177,16 +209,9 @@ export function initOgren(root) {
           <button class="chip${meal === "elmalili" ? " on" : ""}" data-meal="elmalili">Elmalılı Meali</button>
         </div>
         <p class="footnote">Bismillâhirrahmânirrahîm</p>
-        <ol class="ys-liste">
-          ${YASIN.ayetler.map((a) => `
-            <li class="ys-ayet">
-              <span class="esma-no">${a.no}</span>
-              <div class="ys-govde">
-                <p class="ys-arapca">${a.arapca}</p>
-                <p class="ys-meal">${a[meal]}</p>
-              </div>
-            </li>`).join("")}
-        </ol>
+        <ol class="ys-liste">${mealGruplariHTML(
+          YASIN.ayetler.map((a) => ({ no: a.no, ar: a.arapca, meal: a[meal] }))
+        )}</ol>
         <p class="footnote">Meal: ${MEAL_ADI[meal]} · Kaynak: api.alquran.cloud</p>`;
       baglaGeri();
       root.querySelectorAll("[data-meal]").forEach((b) =>
@@ -202,8 +227,124 @@ export function initOgren(root) {
     icerikCiz();
   }
 
+  // --- Kur'an-ı Kerim gezgini ---
+
+  async function kuranYukle() {
+    if (KURAN_CACHE) return KURAN_CACHE;
+    const url = new URL("kuran.json", document.baseURI).href;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    KURAN_CACHE = await res.json();
+    return KURAN_CACHE;
+  }
+
+  function sureSatiri(s) {
+    const ar = s.arapca.split(" ").slice(1).join(" ") || s.arapca;
+    return `<li><button class="og-madde kr-sure" data-no="${s.no}">
+      <span class="kr-no">${s.no}</span>
+      <div class="og-madde-metin">
+        <span class="og-ad">${s.ad}</span>
+        <span class="og-alt">${s.ayet} ayet · ${s.inis}</span>
+      </div>
+      <span class="kr-ad-ar">${ar}</span>
+    </button></li>`;
+  }
+
+  function baglaSatir(kap) {
+    kap.querySelectorAll(".kr-sure").forEach((b) =>
+      b.addEventListener("click", () => git({ gorunum: "sure", no: Number(b.dataset.no) })));
+  }
+
+  // Aramada şapka (â, î, û) ve kesme işaretini yok say: "yasin" → "Yâsîn",
+  // "enam" → "En'âm" eşleşsin.
+  const sadelestir = (t) =>
+    t.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, "")
+      .toLocaleLowerCase("tr");
+
+  function kuranListeCiz() {
+    const son = JSON.parse(localStorage.getItem("hicri.kuran.son") || "null");
+    root.innerHTML = `
+      ${geriBar("Kur'an-ı Kerim")}
+      <div class="kr-ust">
+        ${son ? `<button class="kr-kaldigin" id="kr-devam">
+          <span class="kr-kaldigin-et">Kaldığın yer</span>
+          <span class="kr-kaldigin-ad">${son.no}. ${son.ad} suresi ›</span>
+        </button>` : ""}
+        <input class="kr-arama" id="kr-arama" type="search"
+          placeholder="Sure ara (ad ya da numara)" aria-label="Sure ara" />
+      </div>
+      <ul class="og-menu" id="kr-liste">${SURE_META.map(sureSatiri).join("")}</ul>`;
+    baglaGeri();
+    const liste = root.querySelector("#kr-liste");
+    root.querySelector("#kr-devam")?.addEventListener("click", () =>
+      git({ gorunum: "sure", no: son.no }));
+    root.querySelector("#kr-arama").addEventListener("input", (e) => {
+      const ham = e.target.value.trim();
+      const q = sadelestir(ham);
+      const sonuc = q
+        ? SURE_META.filter((s) => String(s.no) === ham || sadelestir(s.ad).includes(q))
+        : SURE_META;
+      liste.innerHTML = sonuc.length
+        ? sonuc.map(sureSatiri).join("")
+        : `<li class="kr-bos">Sure bulunamadı.</li>`;
+      baglaSatir(liste);
+    });
+    baglaSatir(liste);
+  }
+
+  async function sureCiz(no) {
+    const m = SURE_META.find((s) => s.no === no);
+    if (!m) return;
+    localStorage.setItem("hicri.kuran.son", JSON.stringify({ no, ad: m.ad }));
+    let meal = localStorage.getItem("hicri.kuran.meal") || "diyanet";
+
+    root.innerHTML = `${geriBar(m.ad + " Suresi")}
+      <p class="og-anlam" style="text-align:center" id="kr-durum">Sure yükleniyor…</p>`;
+    baglaGeri();
+
+    let kuran;
+    try {
+      kuran = await kuranYukle();
+    } catch {
+      const d = root.querySelector("#kr-durum");
+      if (d) d.innerHTML = `Sure verisi indirilemedi. İnternet bağlantısını
+        kontrol edip tekrar deneyin.`;
+      return;
+    }
+    const ayetler = kuran.sureler[no];
+    if (!ayetler) return;
+    const besmele = no !== 1 && no !== 9;
+
+    function ciz() {
+      root.innerHTML = `
+        ${geriBar(m.ad + " Suresi")}
+        <div class="chips" style="margin-top:0">
+          <button class="chip${meal === "diyanet" ? " on" : ""}" data-meal="diyanet">Diyanet Meali</button>
+          <button class="chip${meal === "elmalili" ? " on" : ""}" data-meal="elmalili">Elmalılı Meali</button>
+        </div>
+        <p class="footnote">${m.no}. sure · ${m.ayet} ayet · ${m.inis}</p>
+        ${besmele ? `<p class="footnote">Bismillâhirrahmânirrahîm</p>` : ""}
+        <ol class="ys-liste">${mealGruplariHTML(
+          ayetler.map((a, i) => ({ no: i + 1, ar: a[0], meal: a[MEAL_IDX[meal]] }))
+        )}</ol>
+        <p class="footnote">Meal: ${MEAL_AD[meal]} · Kaynak: api.alquran.cloud</p>`;
+      baglaGeri();
+      root.querySelectorAll("[data-meal]").forEach((b) =>
+        b.addEventListener("click", () => {
+          meal = b.dataset.meal;
+          localStorage.setItem("hicri.kuran.meal", meal);
+          const y = window.scrollY;
+          ciz();
+          window.scrollTo(0, y);
+        }));
+    }
+    ciz();
+  }
+
   function cizim(durum) {
     if (durum.gorunum === "menu") menuCiz();
+    else if (durum.gorunum === "kuran") kuranListeCiz();
+    else if (durum.gorunum === "sure") sureCiz(durum.no);
     else if (durum.gorunum === "esma") {
       root.innerHTML = geriBar("Esmaü'l-Hüsna") + `<div id="og-esma"></div>`;
       baglaGeri();

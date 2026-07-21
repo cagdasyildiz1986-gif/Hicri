@@ -2,7 +2,7 @@
 // Kullanım: node build.js [çıktı-dizini]
 // Üretilen: dist/index.html (bağımsız) ve dist/body.html (önizleme gövdesi)
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,6 +13,7 @@ const outDir = process.argv[2] || join(root, "dist");
 const MODULES = [
   "hijri.js", "prayer.js", "cities.js", "religiousDays.js",
   "daily.js", "zikir.js", "esma.js", "dualar.js", "rehber.js", "yasinData.js",
+  "sureMeta.js",
   "ogren.js",
   "calendar.js", "qibla.js", "ayarlar.js", "zincir.js", "app.js",
 ];
@@ -50,4 +51,14 @@ const bodyStandalone = standalone.replace(inner, "").replace("<body></body>", `<
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, "index.html"), bodyStandalone);
 writeFileSync(join(outDir, "body.html"), inner);
+
+// Tam Kur'an verisi ana pakete gömülmez; statik dosya olarak kopyalanır,
+// sure açılınca lazy indirilir. (Yoksa uyarı verir, derleme yine tamamlanır.)
+if (existsSync(join(root, "kuran.json"))) {
+  copyFileSync(join(root, "kuran.json"), join(outDir, "kuran.json"));
+  console.log("kuran.json kopyalandı.");
+} else {
+  console.warn("UYARI: kuran.json yok — 'node scripts/kuran-indir.js' çalıştırın.");
+}
+
 console.log("dist yazıldı:", outDir);
