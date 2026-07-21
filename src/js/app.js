@@ -1,7 +1,7 @@
 // Ana ekran — Hicri tarih, sıradaki vakte geri sayım, günün vakitleri, dini günler
 
 import { toHijri, formatHijri } from "./hijri.js";
-import { prayerTimes, nextPrayer, prevPrayer, PRAYER_NAMES } from "./prayer.js";
+import { prayerTimes, nextPrayer, prevPrayer, PRAYER_NAMES, setKalibrasyon } from "./prayer.js";
 import { CITIES } from "./cities.js";
 import { upcomingDays, daysUntil } from "./religiousDays.js";
 import { gununIcerigi } from "./daily.js";
@@ -9,9 +9,10 @@ import { initZikir } from "./zikir.js";
 import { initOgren } from "./ogren.js";
 import { initCalendar } from "./calendar.js";
 import { initQibla } from "./qibla.js";
-import { initAyarlar, getAyarlar } from "./ayarlar.js";
+import { initAyarlar, getAyarlar, getKalibrasyon } from "./ayarlar.js";
 import { initZincir } from "./zincir.js";
 import { vakitDenetle, sesHazirla } from "./ezan.js";
+import { kandilKontrol } from "./hatirlatma.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -35,9 +36,17 @@ let kibleApi = null;
 
 function setCity(name) {
   localStorage.setItem("hicri.city", name);
+  setKalibrasyon(getKalibrasyon(name)); // ilin vakit ince ayarını uygula
   render();
   takvimApi?.refresh();
   kibleApi?.refresh();
+}
+
+// Seçili ilin kalibrasyonu değişince vakitleri ve takvimi tazele
+function onKalibre() {
+  setKalibrasyon(getKalibrasyon(getCity().name));
+  render();
+  takvimApi?.refresh();
 }
 
 // Şehir seçimi bu sekmelerde anlamlı
@@ -150,18 +159,22 @@ function overlayAc(init) {
 
 export function start() {
   $("#city-select").addEventListener("change", (e) => setCity(e.target.value));
-  $("#ayarlar-btn").addEventListener("click", () => overlayAc(initAyarlar));
+  $("#ayarlar-btn").addEventListener("click", () =>
+    overlayAc((root, kapat) => initAyarlar(root, kapat, getCity().name, onKalibre)));
   $("#zincir-ac").addEventListener("click", () => overlayAc(initZincir));
   initTabs();
   initZikir($("#zikir-root"));
   initOgren($("#ogren-root"));
   takvimApi = initCalendar($("#takvim-root"), getCity);
   kibleApi = initQibla($("#kible-root"), getCity);
+  setKalibrasyon(getKalibrasyon(getCity().name)); // ilin vakit ince ayarı
   render();
+  kandilKontrol(new Date(), getAyarlar()); // yaklaşan kandil/bayram hatırlatması
 
   // Ses iznini ilk kullanıcı hareketinde hazırla (mobil otomatik-ses engeli).
   addEventListener("pointerdown", sesHazirla, { once: true });
 
+  let lastDay = new Date().getDate();
   setInterval(() => {
     renderCountdown();
     vakitDenetle(new Date(), getCity(), getAyarlar()); // vakit girince uyar
@@ -169,6 +182,8 @@ export function start() {
     if (m !== lastMinute) {
       lastMinute = m;
       renderStatic(); // vakit geçişlerinde listeyi tazele
+      const g = new Date().getDate();
+      if (g !== lastDay) { lastDay = g; kandilKontrol(new Date(), getAyarlar()); }
     }
   }, 1000);
 }

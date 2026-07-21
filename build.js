@@ -16,7 +16,7 @@ const MODULES = [
   "daily.js", "zikir.js", "esma.js", "dualar.js", "rehber.js", "yasinData.js",
   "sureMeta.js",
   "ogren.js",
-  "calendar.js", "qibla.js", "ezan.js", "ayarlar.js", "zincir.js", "app.js",
+  "calendar.js", "qibla.js", "ezan.js", "ayarlar.js", "hatirlatma.js", "zincir.js", "app.js",
 ];
 
 const js = MODULES.map((f) => {

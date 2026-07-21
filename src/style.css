@@ -1057,6 +1057,52 @@ body {
 .ay-dinle { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 .ay-dinle .tk-bugun-btn { flex: 1; min-width: 9rem; }
 
+/* Vakit ince ayarı (dakika artır/azalt) */
+.kal-adim { display: flex; align-items: center; gap: 0.5rem; flex: none; }
+.kal-btn {
+  width: 2rem;
+  height: 2rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 50%;
+  color: var(--altin-acik);
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.kal-btn:hover { border-color: var(--altin); }
+.kal-btn:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+.kal-deger {
+  min-width: 3.6rem;
+  text-align: center;
+  color: var(--fildisi);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Kandil/bayram hatırlatma banner'ı (bakır vurgu) */
+.hatirlatma-banner {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  z-index: 50;
+  max-width: min(92%, 420px);
+  margin-top: 0.7rem;
+  background: linear-gradient(135deg, #3a2418, var(--kart));
+  border: 1px solid var(--kandil);
+  border-radius: 999px;
+  color: var(--fildisi);
+  font-size: 0.95rem;
+  padding: 0.7rem 1.3rem;
+  box-shadow: 0 6px 24px #0008;
+  cursor: pointer;
+  transition: transform 0.35s ease;
+}
+.hatirlatma-banner.acik { transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .hatirlatma-banner { transition: none; } }
+
 .og-rehber { display: flex; flex-direction: column; gap: 0.9rem; }
 .og-adimlar {
   margin: 0;
