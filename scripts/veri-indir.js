@@ -17,6 +17,22 @@ const URL_ = "https://api.alquran.cloud/v1/surah/36/editions/quran-uthmani,tr.di
 
 const ARAPCA_HARF = /[؀-ۿ]/;
 
+// quran-uthmani sürümünde surenin ilk ayetine Besmele başa eklenir.
+// Arayüzde ayrı bir "Bismillâhirrahmânirrahîm" başlığı olduğundan, ilk
+// ayetteki bu tekrarı ayıklarız (Fâtiha ve Tevbe hariç, ki Yâsîn ikisi
+// de değil). Diakritikler sürümden sürüme değiştiği için birebir metin
+// yerine, diakritikleri sıyırıp ilk 4 kelimeyi Besmele ile karşılaştırırız.
+const diakritikSiz = (t) => t.replace(/[ً-ْٓ-ٰٟـ]/g, "").replace(/ٱ/g, "ا");
+const BESMELE_SADE = diakritikSiz("بسم الله الرحمن الرحيم");
+
+function besmeleyiAyikla(metin) {
+  const kelimeler = metin.split(" ");
+  if (diakritikSiz(kelimeler.slice(0, 4).join(" ")) === BESMELE_SADE) {
+    return kelimeler.slice(4).join(" ").trim();
+  }
+  return metin;
+}
+
 async function main() {
   console.log("İndiriliyor:", URL_);
   const res = await fetch(URL_);
@@ -49,6 +65,12 @@ async function main() {
     diyanet: diyanet.ayahs[i].text.trim(),
     elmalili: elmalili.ayahs[i].text.trim(),
   }));
+
+  // İlk ayetin başındaki Besmele'yi ayıkla (arayüzde ayrı başlık var).
+  ayetler[0].arapca = besmeleyiAyikla(ayetler[0].arapca);
+  if (!ARAPCA_HARF.test(ayetler[0].arapca)) {
+    throw new Error("Besmele ayıklandıktan sonra 1. ayet boş kaldı");
+  }
 
   const icerik = `// OTOMATİK ÜRETİLDİ — scripts/veri-indir.js
 // Kaynak: api.alquran.cloud (quran-uthmani, tr.diyanet, tr.yazir)
