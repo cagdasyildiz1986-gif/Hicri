@@ -5,9 +5,11 @@ import { NAMAZ_SURELERI, NAMAZ_DUALARI, GUNLUK_DUALAR } from "./dualar.js";
 import { REKAT_TABLOSU, ABDEST_ADIMLARI, NAMAZ_ADIMLARI, NAMAZ_NOTLARI } from "./rehber.js";
 import { YASIN } from "./yasinData.js";
 import { SURE_META } from "./sureMeta.js";
+import { CUZLER } from "./cuz.js";
 
 const MENU = [
   { id: "kuran", ad: "Kur'an-ı Kerim", alt: "114 sure — Arapça ve iki meal" },
+  { id: "hatim", ad: "Hatim Takibi", alt: "Kur'an'ı hatmet — 30 cüz ilerleme" },
   { id: "esma", ad: "Esmaü'l-Hüsna", alt: "Allah'ın 99 güzel ismi" },
   { id: "sureler", ad: "Namaz Sureleri", alt: "Fâtiha, İhlâs, Kevser, Felâk, Nâs" },
   { id: "namazdua", ad: "Namaz Duaları", alt: "Sübhâneke, Ettehiyyâtü, salavatlar, Kunut" },
@@ -34,6 +36,27 @@ const MEAL_AD = { diyanet: "Diyanet İşleri", elmalili: "Elmalılı Hamdi Yazı
 const attrKac = (s) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/\n/g, "&#10;");
+
+// Hatim niyeti/hediye seçenekleri.
+const HATIM_HEDEFLER = [
+  ["kendim", "Kendim için"],
+  ["vefat", "Vefat edenler için"],
+  ["sehit", "Şehitler için"],
+  ["ummet", "Tüm ümmet için"],
+];
+const HATIM_HEDEF_ADI = Object.fromEntries(HATIM_HEDEFLER);
+
+function hatimYukle() {
+  try {
+    const h = JSON.parse(localStorage.getItem("hicri.hatim") || "{}");
+    return { tamamlanan: 0, cuzler: {}, hedef: "kendim", ...h };
+  } catch {
+    return { tamamlanan: 0, cuzler: {}, hedef: "kendim" };
+  }
+}
+function hatimKaydet(h) {
+  localStorage.setItem("hicri.hatim", JSON.stringify(h));
+}
 
 // Diyanet ve Elmalılı mealleri bazı ayetleri birleştirerek çevirir; kaynak,
 // aynı meali o ayet grubunun her numarasına tekrar yazar. Aynı meali paylaşan
@@ -379,10 +402,82 @@ export function initOgren(root) {
     ciz();
   }
 
+  // --- Hatim Takibi (kişisel, çevrimdışı) ---
+  function hatimCiz() {
+    const h = hatimYukle();
+
+    function ciz(kutlama) {
+      const okunan = CUZLER.filter((_, i) => h.cuzler[i + 1]).length;
+      const oran = Math.round((okunan / 30) * 100);
+      root.innerHTML = `
+        ${geriBar("Hatim Takibi")}
+        <div class="og-detay" style="padding-top:0">
+          ${kutlama ? `<div class="hatim-kutla">🎉 1 Hatim tamamlandı<br>
+            <span>${HATIM_HEDEF_ADI[h.hedef]} niyetine — Allah kabul etsin 🤲</span></div>` : ""}
+          <div class="hatim-ozet">
+            <div class="hatim-sayac"><span>${h.tamamlanan}</span><label>Tamamlanan hatim</label></div>
+            <div class="hatim-ilerleme">
+              <div class="hatim-cubuk"><div class="hatim-dolu" style="width:${oran}%"></div></div>
+              <span class="footnote">${okunan}/30 cüz okundu</span>
+            </div>
+          </div>
+          <h3 class="og-bolum-baslik">Niyet / Hediye</h3>
+          <div class="chips">
+            ${HATIM_HEDEFLER.map(([id, ad]) =>
+              `<button class="chip${h.hedef === id ? " on" : ""}" data-hedef="${id}">${ad}</button>`).join("")}
+          </div>
+          <h3 class="og-bolum-baslik">Cüzler</h3>
+          <ol class="hatim-liste">
+            ${CUZLER.map((c, i) => {
+              const no = i + 1;
+              const sure = SURE_META.find((s) => s.no === c[0]);
+              const okundu = !!h.cuzler[no];
+              return `<li class="hatim-cuz${okundu ? " okundu" : ""}">
+                <button class="hatim-tik" data-cuz="${no}" aria-label="${no}. cüz okundu işaretle">${okundu ? "✓" : ""}</button>
+                <button class="hatim-git" data-sure="${c[0]}">
+                  <span class="hatim-cuz-no">${no}. Cüz</span>
+                  <span class="hatim-cuz-yer">${sure ? sure.ad : ""} · ${c[1]}. ayet</span>
+                </button>
+              </li>`;
+            }).join("")}
+          </ol>
+          <p class="footnote">Bir cüzü açıp okuduktan sonra soldaki ✓ ile işaretle.
+          30 cüz tamamlanınca hatim sayılır ve sayaç bir artar.</p>
+        </div>`;
+      baglaGeri();
+      root.querySelectorAll("[data-hedef]").forEach((b) =>
+        b.addEventListener("click", () => { h.hedef = b.dataset.hedef; hatimKaydet(h); ciz(); }));
+      root.querySelectorAll(".hatim-git").forEach((b) =>
+        b.addEventListener("click", () => git({ gorunum: "sure", no: Number(b.dataset.sure) })));
+      root.querySelectorAll(".hatim-tik").forEach((b) =>
+        b.addEventListener("click", () => {
+          const no = b.dataset.cuz;
+          h.cuzler[no] = !h.cuzler[no];
+          navigator.vibrate?.(20);
+          const okunanYeni = CUZLER.filter((_, i) => h.cuzler[i + 1]).length;
+          if (okunanYeni === 30) {
+            h.tamamlanan = (h.tamamlanan || 0) + 1;
+            h.cuzler = {};
+            hatimKaydet(h);
+            const y = window.scrollY;
+            ciz(true);
+            window.scrollTo(0, y);
+          } else {
+            hatimKaydet(h);
+            const y = window.scrollY;
+            ciz();
+            window.scrollTo(0, y);
+          }
+        }));
+    }
+    ciz(false);
+  }
+
   function cizim(durum) {
     if (durum.gorunum === "menu") menuCiz();
     else if (durum.gorunum === "kuran") kuranListeCiz();
     else if (durum.gorunum === "sure") sureCiz(durum.no);
+    else if (durum.gorunum === "hatim") hatimCiz();
     else if (durum.gorunum === "esma") {
       root.innerHTML = geriBar("Esmaü'l-Hüsna") + `<div id="og-esma"></div>`;
       baglaGeri();

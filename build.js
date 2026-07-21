@@ -14,7 +14,7 @@ const outDir = process.argv[2] || join(root, "dist");
 const MODULES = [
   "hijri.js", "prayer.js", "cities.js", "religiousDays.js",
   "daily.js", "zikir.js", "esma.js", "dualar.js", "rehber.js", "yasinData.js",
-  "sureMeta.js",
+  "sureMeta.js", "cuz.js",
   "ogren.js",
   "calendar.js", "qibla.js", "ezan.js", "ayarlar.js", "hatirlatma.js", "zincir.js", "app.js",
 ];
