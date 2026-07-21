@@ -3,7 +3,7 @@
 // tercihler şimdiden saklanır.
 
 import { PRAYER_NAMES } from "./prayer.js";
-import { calKisa, moduOnizle } from "./ezan.js";
+import { calKisa, moduOnizle, ezanOnizle } from "./ezan.js";
 
 const SES_SECENEKLERI = [
   ["ezan", "Ezan"],
@@ -41,8 +41,14 @@ const onizlemeSesi = calKisa;
 
 export function initAyarlar(root, kapat) {
   const a = getAyarlar();
+  let ezanDur = null; // çalan ezan önizlemesini durdurma fonksiyonu
+
+  function ezanOnizleDurdur() {
+    if (ezanDur) { ezanDur(); ezanDur = null; }
+  }
 
   function ciz() {
+    ezanOnizleDurdur(); // yeniden çizimde çalan önizlemeyi kes
     root.innerHTML = `
       <div class="og-geri-bar">
         <button class="tk-btn" id="ay-kapat" aria-label="Kapat">‹</button>
@@ -72,8 +78,8 @@ export function initAyarlar(root, kapat) {
         <button class="tk-bugun-btn" id="ay-onizle">Kısa Sesi Dinle</button>
         <button class="tk-bugun-btn" id="ay-ezan-dinle">Ezanı Dinle</button>
       </div>
-      <p class="footnote" style="text-align:left">Gerçek ezan kaydı (telifsiz)
-      eklenene dek "ezan" seçeneğinde saygılı bir hatırlatma ezgisi çalar.</p>
+      <p class="footnote" style="text-align:left">"Ezan" seçeneğinde vakit girince
+      ezan kaydı çalar; ekrandaki ve buradaki düğmeyle durdurabilirsin.</p>
 
       <h3 class="og-bolum-baslik" style="margin-top:1.2rem">Dini Gün Hatırlatmaları</h3>
       <div class="ay-satir">
@@ -82,13 +88,25 @@ export function initAyarlar(root, kapat) {
           ${a.kandilHatirlatma ? "Açık" : "Kapalı"}</button>
       </div>
 
-      <p class="footnote">Ezan kaydı, telif durumu netleşmiş bir kayıtla
-      mobil sürümde eklenecektir (bkz. PLAN.md, Aşama 6).</p>
     `;
 
-    root.querySelector("#ay-kapat").addEventListener("click", kapat);
+    root.querySelector("#ay-kapat").addEventListener("click", () => {
+      ezanOnizleDurdur();
+      kapat();
+    });
     root.querySelector("#ay-onizle").addEventListener("click", onizlemeSesi);
-    root.querySelector("#ay-ezan-dinle").addEventListener("click", () => moduOnizle("ezan"));
+
+    const ezanBtn = root.querySelector("#ay-ezan-dinle");
+    ezanBtn.addEventListener("click", () => {
+      if (ezanDur) { ezanOnizleDurdur(); return; } // çalıyorsa durdur
+      ezanBtn.textContent = "Ezanı Durdur ⏹";
+      ezanBtn.classList.add("on");
+      ezanDur = ezanOnizle(() => {
+        ezanDur = null;
+        ezanBtn.textContent = "Ezanı Dinle";
+        ezanBtn.classList.remove("on");
+      });
+    });
     root.querySelector("#ay-kandil").addEventListener("click", () => {
       a.kandilHatirlatma = !a.kandilHatirlatma;
       kaydet(a);
