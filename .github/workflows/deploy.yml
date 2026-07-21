@@ -1,0 +1,48 @@
+name: Web önizlemesini yayınla (GitHub Pages)
+
+# Depoya her push geldiğinde uygulamayı derler (node build.js) ve
+# üretilen tek dosyalık dist/ çıktısını GitHub Pages'e yayınlar.
+# Sunucu, npm veya FTP gerektirmez — çevrimdışı statik uygulama olduğu gibi servis edilir.
+
+on:
+  push:
+    branches: [claude/app-development-planning-uri533]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  derle-ve-yayinla:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node.js 22 kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Uygulamayı derle
+        run: node build.js
+
+      - name: Pages ayarını hazırla
+        uses: actions/configure-pages@v5
+
+      - name: dist/ çıktısını yükle
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: GitHub Pages'e yayınla
+        id: deployment
+        uses: actions/deploy-pages@v4
