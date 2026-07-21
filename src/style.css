@@ -977,6 +977,68 @@ body {
   color: var(--adacayi);
   padding: 1.5rem 0;
 }
+/* Ayet kartındaki kopyala düğmesi */
+.ys-kopya {
+  align-self: flex-end;
+  margin-top: 0.2rem;
+  background: transparent;
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 999px;
+  color: var(--adacayi);
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+}
+.ys-kopya:hover { border-color: var(--altin); color: var(--altin-acik); }
+.ys-kopya:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+/* Önceki/sonraki sure gezinmesi */
+.kr-gezinme {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin: 1rem 0 0.4rem;
+}
+.kr-nav {
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  color: var(--fildisi);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.6rem 0.9rem;
+  cursor: pointer;
+  max-width: 48%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kr-nav-sag { text-align: right; }
+.kr-nav:hover { border-color: var(--altin); color: var(--altin-acik); }
+.kr-nav:focus-visible { outline: 2px solid var(--altin); outline-offset: 2px; }
+
+/* ---- Vakit/ezan uyarı banner'ı ---- */
+.ezan-banner {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  z-index: 50;
+  max-width: min(92%, 420px);
+  margin-top: 0.7rem;
+  background: linear-gradient(135deg, #14453a, var(--kart));
+  border: 1px solid var(--altin);
+  border-radius: 999px;
+  color: var(--fildisi);
+  font-size: 0.95rem;
+  padding: 0.7rem 1.3rem;
+  box-shadow: 0 6px 24px #0008;
+  cursor: pointer;
+  transition: transform 0.35s ease;
+}
+.ezan-banner.acik { transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .ezan-banner { transition: none; } }
 
 .og-rehber { display: flex; flex-direction: column; gap: 0.9rem; }
 .og-adimlar {

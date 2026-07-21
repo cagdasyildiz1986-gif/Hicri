@@ -3,6 +3,7 @@
 // tercihler şimdiden saklanır.
 
 import { PRAYER_NAMES } from "./prayer.js";
+import { calCan } from "./ezan.js";
 
 const SES_SECENEKLERI = [
   ["ezan", "Ezan"],
@@ -35,26 +36,8 @@ function kaydet(a) {
   localStorage.setItem("hicri.ayarlar", JSON.stringify(a));
 }
 
-// Kısa bildirim sesi önizlemesi — WebAudio ile iki tonlu zarif bir çan
-function onizlemeSesi() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notalar = [[659.25, 0], [880, 0.18]]; // E5 → A5
-    for (const [frekans, gecikme] of notalar) {
-      const osc = ctx.createOscillator();
-      const kazanc = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.value = frekans;
-      const t = ctx.currentTime + gecikme;
-      kazanc.gain.setValueAtTime(0, t);
-      kazanc.gain.linearRampToValueAtTime(0.25, t + 0.02);
-      kazanc.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
-      osc.connect(kazanc).connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.8);
-    }
-  } catch { /* ses desteklenmiyorsa sessizce geç */ }
-}
+// Kısa bildirim sesi önizlemesi — çan sesi ezan.js'te paylaşılır.
+const onizlemeSesi = calCan;
 
 export function initAyarlar(root, kapat) {
   const a = getAyarlar();
