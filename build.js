@@ -2,7 +2,7 @@
 // Kullanım: node build.js [çıktı-dizini]
 // Üretilen: dist/index.html (bağımsız) ve dist/body.html (önizleme gövdesi)
 
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
@@ -59,8 +59,19 @@ if (existsSync(join(root, "kuran.json"))) {
   console.warn("UYARI: kuran.json yok — 'node scripts/kuran-indir.js' çalıştırın.");
 }
 
+// Sesler (ör. telifsiz ezan kaydı) — sounds/ varsa dist'e kopyalanır.
+let seslerImza = "";
+if (existsSync(join(root, "sounds"))) {
+  mkdirSync(join(outDir, "sounds"), { recursive: true });
+  for (const dosya of readdirSync(join(root, "sounds"))) {
+    copyFileSync(join(root, "sounds", dosya), join(outDir, "sounds", dosya));
+    seslerImza += dosya + statSync(join(root, "sounds", dosya)).size;
+  }
+  console.log("sounds/ kopyalandı.");
+}
+
 // Sürüm damgası: içerik değişince değişir (gereksiz güncelleme tetiklemez).
-const SURUM = createHash("sha1").update(inner).update(String(kuranBoyut)).digest("hex").slice(0, 12);
+const SURUM = createHash("sha1").update(inner).update(String(kuranBoyut)).update(seslerImza).digest("hex").slice(0, 12);
 
 // Çevrimdışı + taze sürüm için service worker. HTML gezinmesi ağ öncelikli
 // (yeni yayın hemen görünür), kuran.json önbellek öncelikli; sürüm değişince
