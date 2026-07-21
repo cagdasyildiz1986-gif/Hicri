@@ -30,11 +30,17 @@ let KURAN_CACHE = null;
 const MEAL_IDX = { diyanet: 1, elmalili: 2 };
 const MEAL_AD = { diyanet: "Diyanet İşleri", elmalili: "Elmalılı Hamdi Yazır" };
 
+// Öznitelik değeri için kaçış (kopya metnini data-kopya'ya güvenle koymak için).
+const attrKac = (s) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/\n/g, "&#10;");
+
 // Diyanet ve Elmalılı mealleri bazı ayetleri birleştirerek çevirir; kaynak,
 // aynı meali o ayet grubunun her numarasına tekrar yazar. Aynı meali paylaşan
 // ardışık ayetleri tek kartta gruplarız: Arapçalar alt alta, meal bir kez,
-// numara aralık ("2–4"). satirlar: [{ no, ar, meal }]
-function mealGruplariHTML(satirlar) {
+// numara aralık ("2–4"). Her kartta kopyala/paylaş düğmesi bulunur.
+// satirlar: [{ no, ar, meal }] ; sureAd: kopya metni başlığı için
+function mealGruplariHTML(satirlar, sureAd) {
   const gruplar = [];
   for (const s of satirlar) {
     const son = gruplar[gruplar.length - 1];
@@ -44,14 +50,32 @@ function mealGruplariHTML(satirlar) {
   return gruplar.map((g) => {
     const aralik = g.ilkNo !== g.sonNo;
     const no = aralik ? `${g.ilkNo}–${g.sonNo}` : g.ilkNo;
+    const kopya = `${sureAd} suresi, ${no}. ${aralik ? "ayetler" : "ayet"}\n\n`
+      + `${g.arlar.join("\n")}\n\n${g.meal}`;
     return `<li class="ys-ayet">
       <span class="esma-no${aralik ? " kr-no-aralik" : ""}">${no}</span>
       <div class="ys-govde">
         ${g.arlar.map((ar) => `<p class="ys-arapca">${ar}</p>`).join("")}
         <p class="ys-meal">${g.meal}</p>
+        <button class="ys-kopya" data-kopya="${attrKac(kopya)}" aria-label="Ayeti kopyala">Kopyala</button>
       </div>
     </li>`;
   }).join("");
+}
+
+// Kopyala düğmelerini bağlar (panoya yazar, kısa geri bildirim gösterir).
+function baglaKopya(root) {
+  root.querySelectorAll(".ys-kopya").forEach((b) =>
+    b.addEventListener("click", async () => {
+      const eski = b.textContent;
+      try {
+        await navigator.clipboard.writeText(b.dataset.kopya);
+        b.textContent = "Kopyalandı ✓";
+      } catch {
+        b.textContent = "Kopyalanamadı";
+      }
+      setTimeout(() => (b.textContent = eski), 1500);
+    }));
 }
 
 export function initOgren(root) {
@@ -210,10 +234,12 @@ export function initOgren(root) {
         </div>
         <p class="footnote">Bismillâhirrahmânirrahîm</p>
         <ol class="ys-liste">${mealGruplariHTML(
-          YASIN.ayetler.map((a) => ({ no: a.no, ar: a.arapca, meal: a[meal] }))
+          YASIN.ayetler.map((a) => ({ no: a.no, ar: a.arapca, meal: a[meal] })),
+          "Yâsîn"
         )}</ol>
         <p class="footnote">Meal: ${MEAL_ADI[meal]} · Kaynak: api.alquran.cloud</p>`;
       baglaGeri();
+      baglaKopya(root);
       root.querySelectorAll("[data-meal]").forEach((b) =>
         b.addEventListener("click", () => {
           meal = b.dataset.meal;
@@ -325,10 +351,22 @@ export function initOgren(root) {
         <p class="footnote">${m.no}. sure · ${m.ayet} ayet · ${m.inis}</p>
         ${besmele ? `<p class="footnote">Bismillâhirrahmânirrahîm</p>` : ""}
         <ol class="ys-liste">${mealGruplariHTML(
-          ayetler.map((a, i) => ({ no: i + 1, ar: a[0], meal: a[MEAL_IDX[meal]] }))
+          ayetler.map((a, i) => ({ no: i + 1, ar: a[0], meal: a[MEAL_IDX[meal]] })),
+          m.ad
         )}</ol>
-        <p class="footnote">Meal: ${MEAL_AD[meal]} · Kaynak: api.alquran.cloud</p>`;
+        <p class="footnote">Meal: ${MEAL_AD[meal]} · Kaynak: api.alquran.cloud</p>
+        <div class="kr-gezinme">
+          ${no > 1
+            ? `<button class="kr-nav" data-git="${no - 1}">‹ ${SURE_META[no - 2].ad}</button>`
+            : `<span></span>`}
+          ${no < 114
+            ? `<button class="kr-nav kr-nav-sag" data-git="${no + 1}">${SURE_META[no].ad} ›</button>`
+            : `<span></span>`}
+        </div>`;
       baglaGeri();
+      baglaKopya(root);
+      root.querySelectorAll(".kr-nav").forEach((b) =>
+        b.addEventListener("click", () => git({ gorunum: "sure", no: Number(b.dataset.git) })));
       root.querySelectorAll("[data-meal]").forEach((b) =>
         b.addEventListener("click", () => {
           meal = b.dataset.meal;

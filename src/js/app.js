@@ -9,8 +9,9 @@ import { initZikir } from "./zikir.js";
 import { initOgren } from "./ogren.js";
 import { initCalendar } from "./calendar.js";
 import { initQibla } from "./qibla.js";
-import { initAyarlar } from "./ayarlar.js";
+import { initAyarlar, getAyarlar } from "./ayarlar.js";
 import { initZincir } from "./zincir.js";
+import { vakitDenetle, sesHazirla } from "./ezan.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -157,8 +158,13 @@ export function start() {
   takvimApi = initCalendar($("#takvim-root"), getCity);
   kibleApi = initQibla($("#kible-root"), getCity);
   render();
+
+  // Ses iznini ilk kullanıcı hareketinde hazırla (mobil otomatik-ses engeli).
+  addEventListener("pointerdown", sesHazirla, { once: true });
+
   setInterval(() => {
     renderCountdown();
+    vakitDenetle(new Date(), getCity(), getAyarlar()); // vakit girince uyar
     const m = new Date().getMinutes();
     if (m !== lastMinute) {
       lastMinute = m;
