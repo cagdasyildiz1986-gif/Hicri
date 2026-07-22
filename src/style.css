@@ -1199,6 +1199,33 @@ body {
 }
 .hd-rozet.on { background: var(--altin); border-color: var(--altin); color: var(--zemin-koyu); }
 
+/* Hatim Halkası — cüz satırında kişi girişi */
+.hk-cuz-govde {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  background: var(--kart);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 3px;
+  padding: 0.5rem 0.7rem;
+}
+.hk-cuz-ust { color: var(--fildisi); font-size: 0.92rem; }
+.hatim-cuz.okundu .hk-cuz-ust { color: var(--altin-acik); }
+.hk-kim {
+  width: 100%;
+  background: var(--zemin-koyu);
+  border: 1px solid var(--kart-cizgi);
+  border-radius: 2px;
+  color: var(--fildisi);
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.5rem;
+}
+.hk-kim::placeholder { color: var(--adacayi); opacity: 0.7; }
+.hk-kim:focus-visible { outline: 2px solid var(--altin); outline-offset: 1px; }
+
 .og-rehber { display: flex; flex-direction: column; gap: 0.9rem; }
 .og-adimlar {
   margin: 0;

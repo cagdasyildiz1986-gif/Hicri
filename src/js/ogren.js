@@ -10,6 +10,7 @@ import { CUZLER } from "./cuz.js";
 const MENU = [
   { id: "kuran", ad: "Kur'an-ı Kerim", alt: "114 sure — Arapça ve iki meal" },
   { id: "hatim", ad: "Hatim Takibi", alt: "Kur'an'ı hatmet — 30 cüz ilerleme" },
+  { id: "halka", ad: "Hatim Halkası", alt: "Grup hatmi — 30 cüzü paylaştır" },
   { id: "esma", ad: "Esmaü'l-Hüsna", alt: "Allah'ın 99 güzel ismi" },
   { id: "sureler", ad: "Namaz Sureleri", alt: "Fâtiha, İhlâs, Kevser, Felâk, Nâs" },
   { id: "namazdua", ad: "Namaz Duaları", alt: "Sübhâneke, Ettehiyyâtü, salavatlar, Kunut" },
@@ -57,6 +58,18 @@ function hatimYukle() {
 function hatimKaydet(h) {
   localStorage.setItem("hicri.hatim", JSON.stringify(h));
 }
+
+// Hatim halkası (grup hatmi, cihazda) — birden çok halka saklanır.
+function halkaYukle() {
+  try {
+    const s = JSON.parse(localStorage.getItem("hicri.halka") || "{}");
+    return { halkalar: [], ...s };
+  } catch {
+    return { halkalar: [] };
+  }
+}
+function halkaKaydet(s) { localStorage.setItem("hicri.halka", JSON.stringify(s)); }
+function halkaOkunan(hk) { return Object.values(hk.cuzler || {}).filter((c) => c && c.okundu).length; }
 
 // Diyanet ve Elmalılı mealleri bazı ayetleri birleştirerek çevirir; kaynak,
 // aynı meali o ayet grubunun her numarasına tekrar yazar. Aynı meali paylaşan
@@ -473,11 +486,145 @@ export function initOgren(root) {
     ciz(false);
   }
 
+  // --- Hatim Halkası (grup hatmi, cihazda) ---
+  function halkaListeCiz() {
+    const s = halkaYukle();
+    root.innerHTML = `
+      ${geriBar("Hatim Halkası")}
+      <div class="og-detay" style="padding-top:0">
+        <p class="footnote" style="text-align:left">Bir grup için hatmi burada
+        yönet: 30 cüzü kişilere paylaştır, okundukça işaretle. Tümü bitince hatim
+        tamamlanır. Tamamen bu cihazda çalışır.</p>
+        <button class="zn-baslat-btn" id="hk-yeni">＋ Yeni Halka Oluştur</button>
+        ${s.halkalar.length === 0
+          ? `<p class="kr-bos">Henüz halka yok. Yeni bir hatim halkası oluştur.</p>`
+          : `<ul class="og-menu">${s.halkalar.map((hk) => {
+              const ok = halkaOkunan(hk);
+              return `<li><button class="og-madde" data-id="${hk.id}">
+                <div class="og-madde-metin">
+                  <span class="og-ad">${hk.ad}</span>
+                  <span class="og-alt">${HATIM_HEDEF_ADI[hk.hedef] || ""} · ${ok}/30 cüz${hk.tamamlanan ? ` · ${hk.tamamlanan} hatim` : ""}</span>
+                </div>
+                <span class="og-ok">›</span>
+              </button></li>`;
+            }).join("")}</ul>`}
+      </div>`;
+    baglaGeri();
+    root.querySelector("#hk-yeni").addEventListener("click", halkaYeniCiz);
+    root.querySelectorAll(".og-madde").forEach((b) =>
+      b.addEventListener("click", () => git({ gorunum: "halkaDetay", id: b.dataset.id })));
+  }
+
+  function halkaYeniCiz() {
+    root.innerHTML = `
+      ${geriBar("Yeni Halka")}
+      <form class="zn-form" id="hk-form">
+        <label class="zn-etiket">Halka Adı
+          <input class="zn-girdi" id="hk-ad" maxlength="40" placeholder="ör. Ailemiz için hatim" required />
+        </label>
+        <label class="zn-etiket">Niyet / Hediye
+          <select class="zn-girdi" id="hk-hedef">
+            ${HATIM_HEDEFLER.map(([id, ad]) => `<option value="${id}">${ad}</option>`).join("")}
+          </select>
+        </label>
+        <p class="zn-not" id="hk-hata"></p>
+        <button class="zn-eylem" type="submit">Halkayı Oluştur</button>
+      </form>`;
+    baglaGeri();
+    root.querySelector("#hk-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const ad = root.querySelector("#hk-ad").value.trim();
+      if (!ad) { root.querySelector("#hk-hata").textContent = "Halka adı gerekli."; return; }
+      const s = halkaYukle();
+      const hk = { id: "hk-" + Date.now(), ad, hedef: root.querySelector("#hk-hedef").value, cuzler: {}, tamamlanan: 0 };
+      s.halkalar.push(hk);
+      halkaKaydet(s);
+      git({ gorunum: "halkaDetay", id: hk.id });
+    });
+  }
+
+  function halkaDetayCiz(id) {
+    const s = halkaYukle();
+    const hk = s.halkalar.find((x) => x.id === id);
+    if (!hk) return halkaListeCiz();
+    if (!hk.cuzler) hk.cuzler = {};
+
+    function ciz(kutlama) {
+      const ok = halkaOkunan(hk);
+      const atanan = Object.values(hk.cuzler).filter((c) => c && c.kim).length;
+      const oran = Math.round((ok / 30) * 100);
+      root.innerHTML = `
+        ${geriBar(hk.ad)}
+        <div class="og-detay" style="padding-top:0">
+          ${kutlama ? `<div class="hatim-kutla">🎉 Hatim tamamlandı<br>
+            <span>${HATIM_HEDEF_ADI[hk.hedef]} niyetine — Allah kabul etsin 🤲</span></div>` : ""}
+          <div class="hatim-ozet">
+            <div class="hatim-sayac"><span>${ok}/30</span><label>Okundu</label></div>
+            <div class="hatim-ilerleme">
+              <div class="hatim-cubuk"><div class="hatim-dolu" style="width:${oran}%"></div></div>
+              <span class="footnote">${atanan}/30 cüz paylaşıldı${hk.tamamlanan ? ` · ${hk.tamamlanan} hatim tamamlandı` : ""}</span>
+            </div>
+          </div>
+          <p class="footnote" style="text-align:left">Her cüzü bir kişiye yaz, okununca ✓ ile işaretle.</p>
+          <ol class="hatim-liste">
+            ${CUZLER.map((c, i) => {
+              const no = i + 1;
+              const sure = SURE_META.find((x) => x.no === c[0]);
+              const cz = hk.cuzler[no] || {};
+              return `<li class="hatim-cuz${cz.okundu ? " okundu" : ""}">
+                <button class="hatim-tik" data-cuz="${no}" aria-label="${no}. cüz okundu">${cz.okundu ? "✓" : ""}</button>
+                <div class="hk-cuz-govde">
+                  <span class="hk-cuz-ust">${no}. Cüz · ${sure ? sure.ad : ""}</span>
+                  <input class="hk-kim" data-cuz="${no}" maxlength="20" placeholder="kime? (rumuz)" value="${(cz.kim || "").replace(/"/g, "&quot;")}" />
+                </div>
+              </li>`;
+            }).join("")}
+          </ol>
+          <button class="chip" id="hk-sil" style="margin-top:0.4rem">Halkayı Sil</button>
+        </div>`;
+      baglaGeri();
+
+      root.querySelectorAll(".hk-kim").forEach((inp) =>
+        inp.addEventListener("change", () => {
+          const no = inp.dataset.cuz;
+          hk.cuzler[no] = { ...(hk.cuzler[no] || {}), kim: inp.value.trim() };
+          halkaKaydet(s);
+        }));
+      root.querySelectorAll(".hatim-tik").forEach((b) =>
+        b.addEventListener("click", () => {
+          const no = b.dataset.cuz;
+          const cz = hk.cuzler[no] || {};
+          hk.cuzler[no] = { ...cz, okundu: !cz.okundu };
+          navigator.vibrate?.(20);
+          const y = window.scrollY;
+          if (halkaOkunan(hk) === 30) {
+            hk.tamamlanan = (hk.tamamlanan || 0) + 1;
+            for (const k of Object.keys(hk.cuzler)) hk.cuzler[k].okundu = false;
+            halkaKaydet(s);
+            ciz(true);
+          } else {
+            halkaKaydet(s);
+            ciz();
+          }
+          window.scrollTo(0, y);
+        }));
+      root.querySelector("#hk-sil").addEventListener("click", () => {
+        s.halkalar = s.halkalar.filter((x) => x.id !== id);
+        halkaKaydet(s);
+        gecmis.pop();
+        cizim(gecmis[gecmis.length - 1] || { gorunum: "menu" });
+      });
+    }
+    ciz(false);
+  }
+
   function cizim(durum) {
     if (durum.gorunum === "menu") menuCiz();
     else if (durum.gorunum === "kuran") kuranListeCiz();
     else if (durum.gorunum === "sure") sureCiz(durum.no);
     else if (durum.gorunum === "hatim") hatimCiz();
+    else if (durum.gorunum === "halka") halkaListeCiz();
+    else if (durum.gorunum === "halkaDetay") halkaDetayCiz(durum.id);
     else if (durum.gorunum === "esma") {
       root.innerHTML = geriBar("Esmaü'l-Hüsna") + `<div id="og-esma"></div>`;
       baglaGeri();
