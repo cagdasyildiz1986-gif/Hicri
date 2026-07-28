@@ -70,8 +70,21 @@ if (existsSync(join(root, "sounds"))) {
   console.log("sounds/ kopyalandı.");
 }
 
+// Bağımsız sayfalar (gizlilik, kullanım koşulları) — src/sayfalar/*.html → dist/
+let sayfalarImza = "";
+const sayfaDizin = join(root, "src/sayfalar");
+if (existsSync(sayfaDizin)) {
+  for (const dosya of readdirSync(sayfaDizin)) {
+    if (!dosya.endsWith(".html")) continue;
+    const icerik = readFileSync(join(sayfaDizin, dosya), "utf8");
+    writeFileSync(join(outDir, dosya), icerik);
+    sayfalarImza += dosya + icerik.length;
+  }
+  console.log("src/sayfalar/ kopyalandı.");
+}
+
 // Sürüm damgası: içerik değişince değişir (gereksiz güncelleme tetiklemez).
-const SURUM = createHash("sha1").update(inner).update(String(kuranBoyut)).update(seslerImza).digest("hex").slice(0, 12);
+const SURUM = createHash("sha1").update(inner).update(String(kuranBoyut)).update(seslerImza).update(sayfalarImza).digest("hex").slice(0, 12);
 
 // Çevrimdışı + taze sürüm için service worker. HTML gezinmesi ağ öncelikli
 // (yeni yayın hemen görünür), kuran.json önbellek öncelikli; sürüm değişince
@@ -101,10 +114,11 @@ self.addEventListener("fetch", (e) => {
       try {
         const net = await fetch(istek);
         const c = await caches.open(CACHE);
-        c.put("./index.html", net.clone());
+        c.put(istek, net.clone());
+        if (url.pathname.endsWith("/") || url.pathname.endsWith("/index.html")) c.put("./index.html", net.clone());
         return net;
       } catch {
-        return (await caches.match("./index.html")) || (await caches.match("./")) || Response.error();
+        return (await caches.match(istek)) || (await caches.match("./index.html")) || (await caches.match("./")) || Response.error();
       }
     })());
     return;

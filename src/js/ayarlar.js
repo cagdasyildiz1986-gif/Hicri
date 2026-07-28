@@ -127,6 +127,11 @@ export function initAyarlar(root, kapat, il = "", onKalibre = () => {}) {
           ${a.kandilHatirlatma ? "Açık" : "Kapalı"}</button>
       </div>
 
+      <h3 class="og-bolum-baslik" style="margin-top:1.2rem">Hakkında</h3>
+      <div class="ay-baglantilar">
+        <a class="ay-baglanti" href="./gizlilik.html" target="_blank" rel="noopener">Gizlilik Politikası ›</a>
+        <a class="ay-baglanti" href="./kosullar.html" target="_blank" rel="noopener">Kullanım Koşulları ›</a>
+      </div>
     `;
 
     root.querySelector("#ay-kapat").addEventListener("click", () => {
